@@ -8,57 +8,57 @@ var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
 
 //All js needed for the project
-var dev_js_globs = [
+var devJsGlobs = [
                 './src/js/*.js'
                 ];
 
 //All css needed for the project
-var dev_css_globs = [
+var devCssGlobs = [
                     './src/css/*.css'
                  ];
 
 //Path for JS folder
-var prod_js_folder = './src/dist/js/';
+var prodJsFolder = './src/dist/js/';
 
 //Path for output JS file
-var prod_js_path = (prod_js_folder + 'app.min.js');
+var prodJsPath = (prodJsFolder + 'app.min.js');
 
 //Path for CSS folder
-var prod_css_folder = './src/dist/css/';
+var prodCssFolder = './src/dist/css/';
 
 //Path for output CSS file
-var prod_css_path = (prod_css_folder + 'main.min.css');
+var prodCssPath = (prodCssFolder + 'main.min.css');
 
 
 //Development tasks
-gulp.task('dev_scripts', function() {
-  return gulp.src(dev_js_globs)
+gulp.task('devScripts', function() {
+  return gulp.src(devJsGlobs)
     .pipe(concat('app.js'))
-    .pipe(gulp.dest(prod_js_folder))
+    .pipe(gulp.dest(prodJsFolder))
     .pipe(rename({
       suffix: '.min'
     }))
     .pipe(uglify())
-    .pipe(gulp.dest(prod_js_folder));
+    .pipe(gulp.dest(prodJsFolder));
 });
 
-gulp.task('dev_styles', function() {
-  return gulp.src(dev_css_globs)
+gulp.task('devStyles', function() {
+  return gulp.src(devCssGlobs)
     .pipe(concat('main.css'))
-    .pipe(gulp.dest(prod_css_folder))
+    .pipe(gulp.dest(prodCssFolder))
     .pipe(rename({
       suffix: '.min'
     }))
     .pipe(cssmin())
-    .pipe(gulp.dest(prod_css_folder));
+    .pipe(gulp.dest(prodCssFolder));
 });
 
 
 //Main tasks
-gulp.task('default', ['dev_scripts', 'dev_styles']);
+gulp.task('default', ['devScripts', 'devStyles']);
 
 //Watch for file change task
 gulp.task('watch', function() {
-  gulp.watch(dev_js_globs, ['dev_scripts']);
-  gulp.watch(dev_css_globs, ['dev_styles']);
+  gulp.watch(devJsGlobs, ['devScripts']);
+  gulp.watch(devCssGlobs, ['devStyles']);
 });
