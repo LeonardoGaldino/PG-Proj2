@@ -2,7 +2,7 @@
 
 2º Project for Graphics processing discipline.
 
-### Installation
+### Importants:
 
 ```
 Case pattern: CamelCase
