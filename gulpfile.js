@@ -9,11 +9,14 @@ var uglify = require('gulp-uglify');
 
 //All js needed for the project
 var devJsGlobs = [
-                './src/js/*.js'
+                  './node_modules/jquery/dist/jquery.min.js',
+                  './node_modules/materialize-css/dist/js/materialize.min.js',
+                  './src/js/*.js'
                 ];
 
 //All css needed for the project
 var devCssGlobs = [
+                    './node_modules/materialize-css/dist/css/materialize.min.css',
                     './src/css/*.css'
                  ];
 
