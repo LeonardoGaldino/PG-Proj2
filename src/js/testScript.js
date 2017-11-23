@@ -29,4 +29,4 @@ function mainAnimationLoop() {
 	}, 150);
 }
 
-mainAnimationLoop();
+//mainAnimationLoop();

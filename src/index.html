@@ -4,10 +4,43 @@
 		<title> Projeto2 PG </title>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="dist/css/main.min.css" />
 	</head>
 	<body>
-		<canvas id="main-canvas"></canvas>
-		<script src="dist/js/app.min.js"></script>
+		<div class="container">
+
+		    <div id="canvas-row" class="row">
+			    <div class="col s12">
+			    	<div class="card-panel" style="background-color: #f5f5f5">
+						<canvas id="main-canvas"></canvas>
+			        </div>
+		      	</div>
+    		</div>
+
+    		<div class="row">
+    			<div class="col s8">
+					<div class="file-field input-field">
+						<div class="btn">
+							<i class="material-icons">attach_file</i>
+							<input id="file-input-field" type="file">
+						</div>
+						<div class="file-path-wrapper">
+							<input class="file-path validate" type="text" 
+									placeholder="Escolha um arquivo de entrada">
+						</div>
+					</div>
+				</div>
+				
+				<div id="button-wrapper" class="col s4">
+					<a onclick="loadFile()" class="waves-effect waves-light btn">
+						<i class="material-icons right">send</i>
+						DO IT
+					</a>
+				</div>
+			</div>
+
+			<script src="dist/js/app.min.js"></script>
+		</div>
 	</body>
 </html>

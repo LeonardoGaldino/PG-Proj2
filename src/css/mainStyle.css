@@ -2,3 +2,11 @@
 	height: 500px;
 	width: 500px;
 }
+
+#button-wrapper {
+	padding-top: 20px;
+}
+
+#canvas-row {
+	margin-bottom: 0px;
+}
