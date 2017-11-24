@@ -1,4 +1,4 @@
-function loadFile() {
+var loadFile = () => {
 	var inputNode = document.getElementById('file-input-field'); //File Input DOM node
 	var inputFile = inputNode.files[0]; //File is always the first element in the array
 	var fileParser = new FileReader();
