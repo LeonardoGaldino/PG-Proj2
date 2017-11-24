@@ -92,12 +92,21 @@ gulp.task('deleteTemporaries', () => { //delete temporary files (clean build)
 });
 
 //Main tasks
+//Tasks inside array are made in parallel
 gulp.task('default', () => {
   gulpSequence(['dependeciesScripts', 'dependeciesStyles'] , ['devScripts', 'devStyles'], ['mergeScripts', 'mergeStyles'], 'deleteTemporaries');
 });
 
+gulp.task('handleScripts', () => {
+  gulpSequence('dependeciesScripts' , 'devScripts', 'mergeScripts', 'deleteTemporaries');
+});
+
+gulp.task('handleStyles', () => {
+  gulpSequence('dependeciesStyles' , 'devStyles', 'mergeStyles', 'deleteTemporaries');
+});
+
 //Watch for file change task
 gulp.task('watch', () => {
-  gulp.watch(devJsGlobs, ['default']);
-  gulp.watch(devCssGlobs, ['default']);
+  gulp.watch(devJsGlobs, ['handleScripts']);
+  gulp.watch(devCssGlobs, ['handleStyles']);
 });
