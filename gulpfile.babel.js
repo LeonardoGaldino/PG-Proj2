@@ -1,41 +1,43 @@
 //gulp imported
-var gulp = require('gulp');
+let gulp = require('gulp');
+let babel = require('gulp-babel'); //Babel plugin to transpile to EC5
 
 //gulp plugins imported
-var concat = require('gulp-concat');
-var cssmin = require('gulp-minify-css');
-var rename = require("gulp-rename");
-var uglify = require('gulp-uglify');
+let concat = require('gulp-concat');
+let cssmin = require('gulp-minify-css');
+let rename = require("gulp-rename");
+let uglify = require('gulp-uglify');
 
 //All js needed for the project
-var devJsGlobs = [
+let devJsGlobs = [
                   './node_modules/jquery/dist/jquery.min.js',
                   './node_modules/materialize-css/dist/js/materialize.min.js',
                   './src/js/*.js'
                 ];
 
 //All css needed for the project
-var devCssGlobs = [
+let devCssGlobs = [
                     './node_modules/materialize-css/dist/css/materialize.min.css',
                     './src/css/*.css'
                  ];
 
 //Path for JS folder
-var prodJsFolder = './src/dist/js/';
+let prodJsFolder = './src/dist/js/';
 
 //Path for output JS file
-var prodJsPath = (prodJsFolder + 'app.min.js');
+let prodJsPath = (prodJsFolder + 'app.min.js');
 
 //Path for CSS folder
-var prodCssFolder = './src/dist/css/';
+let prodCssFolder = './src/dist/css/';
 
 //Path for output CSS file
-var prodCssPath = (prodCssFolder + 'main.min.css');
+let prodCssPath = (prodCssFolder + 'main.min.css');
 
 
 //Development tasks
-gulp.task('devScripts', function() {
+gulp.task('devScripts', () => {
   return gulp.src(devJsGlobs)
+    .pipe(babel()) //Transpiles to ES5
     .pipe(concat('app.js'))
     .pipe(gulp.dest(prodJsFolder))
     .pipe(rename({
@@ -45,7 +47,7 @@ gulp.task('devScripts', function() {
     .pipe(gulp.dest(prodJsFolder));
 });
 
-gulp.task('devStyles', function() {
+gulp.task('devStyles', () => {
   return gulp.src(devCssGlobs)
     .pipe(concat('main.css'))
     .pipe(gulp.dest(prodCssFolder))
@@ -61,7 +63,7 @@ gulp.task('devStyles', function() {
 gulp.task('default', ['devScripts', 'devStyles']);
 
 //Watch for file change task
-gulp.task('watch', function() {
+gulp.task('watch', () => {
   gulp.watch(devJsGlobs, ['devScripts']);
   gulp.watch(devCssGlobs, ['devStyles']);
 });
