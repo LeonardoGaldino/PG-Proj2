@@ -4,7 +4,7 @@ let babel = require('gulp-babel'); //Babel plugin to transpile to EC5
 
 //gulp plugins imported
 let concat = require('gulp-concat');
-let cssmin = require('gulp-minify-css');
+let cssmin = require('gulp-clean-css');
 let rename = require("gulp-rename");
 let uglify = require('gulp-uglify');
 
