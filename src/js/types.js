@@ -148,7 +148,8 @@ class VectorOperations {
 */
 class Object3D {
 
-    constructor() {
+    constructor(objectName) {
+        this.objectName = objectName;
         this.triangles = [];
     }
 

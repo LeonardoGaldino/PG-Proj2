@@ -1,6 +1,7 @@
 //Parses file content into objects
 var storeFileContent = (fileContent, fileName) => {
-	let newObject = new Object3D();
+	let objectName = getObjectName(fileName);
+	let newObject = new Object3D(objectName);
 	let lines = fileContent.split('\n');
 	let limits = lines[0].split(' ');
 	let numPoints = limits[0];
