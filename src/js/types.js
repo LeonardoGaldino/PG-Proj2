@@ -141,7 +141,6 @@ class VectorOperations {
 
 }
 
-
 /* Class designed to represent Object that will be drawn
     - 3DObject would not fit good
     - Represented by several triangles
