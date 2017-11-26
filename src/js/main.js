@@ -45,14 +45,29 @@ var storeFileContent = (fileContent, fileName) => {
 	scenarioObjects.push(newObject);
 }
 
+//Validates if user selected one or more object files
+//Validates if user selected exactly one camera file
+var validateFilesInputs = () => {
+	let fileInputNode = document.getElementById('file-input-field'); //File Input DOM node
+	let cameraInputNode = document.getElementById('camera-input-field'); //Camera Input DOM node
+	let numObjectFiles = fileInputNode.files.length; //Number of selected objects files
+	let numCameraFiles = cameraInputNode.files.length; //Number of selected camera files
+	return ( (numCameraFiles == 1) && (numObjectFiles > 0) );
+}
+
 //Load all the selected files and parses it into objects
 var loadFile = () => {
-	scenarioObjects = [];
-	let inputNode = document.getElementById('file-input-field'); //File Input DOM node
-	let inputFiles = inputNode.files; //Array of selected files
+	//Validates if files are correctly submitted
+	if(!validateFilesInputs()) {
+		Materialize.toast('Selecione uma câmera e um ou mais objetos!', 4000);
+		return;
+	}
+	scenarioObjects = []; //Erases all scenarios objects
+	let fileInputNode = document.getElementById('file-input-field'); //File Input DOM node
+	let objectInputFiles = fileInputNode.files; //Array of selected objects
 
-	for(let idx = 0; idx < inputFiles.length ; ++idx) { //For each file, parse it and load its content
-		let file = inputFiles[idx];
+	for(let idx = 0; idx < objectInputFiles.length ; ++idx) { //For each file, parse it and load its content
+		let file = objectInputFiles[idx];
 		let fileParser = new FileReader();
 
 		fileParser.onload = function(loadEvent) { //Callback for file loaded
