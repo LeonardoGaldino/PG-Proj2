@@ -102,6 +102,22 @@ class VectorOperations {
 
     constructor() { }
 
+    /*Multiplication for a scalar number
+        - Receives a Vector and a number as input
+        - Returns new Vector (the input Vector multiplied by k)
+        - Returned Vector is a multiple of input Vector
+        - Doesn't change input Vector!
+    */
+    scalarMultiplication(vector, k) { 
+        let newVector = new Vector(vector.coordinates[0],
+                                    vector.coordinates[1],
+                                    vector.coordinates[2]);
+        newVector.coordinates.forEach( (coordinate, idx) => {
+            newVector.coordinates[idx] = (coordinate*k);
+        });
+        return newVector;
+    }
+
     /*Sum of a Vector and a Point
         - Receives Vector and a Point as input
         - Returns a Point
@@ -114,12 +130,23 @@ class VectorOperations {
         return new Point(newCoords[0], newCoords[1], newCoords[2]);
     }
 
+    /*Vector Projection Operation
+        - Receive two Vectors as input
+        - Returns the projections of first input Vector on the second
+        - Returned Vector is a multiple of the second Vector
+    */
+    vectorProjection(vector1, vector2) {
+        let scalarNominator = this.scalarProduct(vector1, vector2);
+        let scalarDenominator = this.scalarProduct(vector2, vector2);
+        return this.scalarMultiplication(vector2, (scalarNominator/scalarDenominator));
+    }
+
     /*Scalar product between Vectors
         - Receives two Vectors as input
         - Returns a scalar value
+        - YOLO!
     */
     scalarProduct(vector1, vector2) {
-        //YOLO!
         return vector1.coordinates.reduce( (prevValue, curValue, idx) => {
             return (prevValue + curValue*vector2.coordinates[idx]);
         }, 0);
