@@ -22,3 +22,8 @@ function MatrixMultiplicationException(message) {
 	this.message = message;
 	this.name = 'MatrixMultiplicationException';	
 }
+
+function BadColorException(message) {
+	this.message = message;
+	this.name = 'BadColorException';	
+}

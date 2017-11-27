@@ -31,10 +31,38 @@ class Triple {
     /*Triple to array
         - Returns an array with triple's coordinates + isPoint
     */
-    toArray() {
-        return this.coordinates.map( (coordinate) => {
+    toArray(addPointControl) {
+        let temp = this.coordinates.map( (coordinate) => {
             return coordinate;
-        }).push(this.isPoint);
+        });
+        if(addPointControl)
+            temp.push(this.isPoint);
+        return temp;
+    }
+
+    /*Base system change
+        - Receives transformation Matrix (4x4)
+        - Returns Point or Vector after transformation
+    */
+    baseChange(changeMatrix) {
+        let tripleMatrix = new Matrix({
+            rows: 4,
+            columns: 1,
+            matrix: [
+                        [this.coordinates[0]],
+                        [this.coordinates[1]],
+                        [this.coordinates[2]],
+                        [this.isPoint],   
+                    ],
+            addDimension: false
+        });
+        let changedTriple = MatrixOperations.multiply(changeMatrix, tripleMatrix);
+        if(this.isPoint) {
+            return new Point(changedTriple.matrix[0][0], changedTriple.matrix[1][0],
+                                changedTriple.matrix[2][0]);
+        }
+        return new Vector(changedTriple.matrix[0][0], changedTriple.matrix[1][0],
+                        changedTriple.matrix[2][0]);
     }
 
 }
@@ -285,6 +313,9 @@ class Camera {
 
 }
 
+/* Class designed to represent a Color as RGB
+    - Red/Blue/Green should be at range [0,255]
+*/
 class Color {
     constructor (red, blue, green) {
         this.rgb = {
@@ -292,9 +323,30 @@ class Color {
             blue: blue,
             green: green
         };
+        validateColor();
+    }
+
+    validateColor() {
+        if(this.rgb.red < 0 || this.rgb.red > 255 || this.rgb.green < 0
+                || this.rgb.green > 255 || this.rgb.blue < 0
+                || this.rgb.blue > 255)
+                {
+                    let message = `Color componentes out of range! RGB = (
+                        ${this.rgb.red},${this.rgb.green},${this.rgb.blue})`
+                    throw new BadColorException(message); 
+                }
+        if(isNaN(this.rgb.red))
+            throw new BadColorException('RGB invalid red component!');
+        if(isNaN(this.rgb.green))
+            throw new BadColorException('RGB invalid green component!');
+        if(isNaN(this.rgb.blue))
+            throw new BadColorException('RGB invalid blue component!');
     }
 }
 
+/* Class designed to represent a light source
+
+*/
 class Illumination {
 
     constructor(position, ambRefl, ambColor, difConstant, difVector, spec, sourceColor, rugosity) {
@@ -310,6 +362,9 @@ class Illumination {
 
 }
 
+/* Class designed to represent Matrix of any size
+    - addExtraDimension adds other dimension to operate with isPoint coordinate on Vector/Points
+*/
 class Matrix {
 
     constructor(matrixConfiguration) {
@@ -352,11 +407,14 @@ class Matrix {
 
 }
 
+/* Class designed to operate with Matrix
+
+*/
 class MatrixOperations {
 
     static multiply(matrix1, matrix2) {
         if(matrix1.columns != matrix2.rows) {
-            let message = `Can't multiply matrix with ${matrix1.columns}
+            let message = `Can't multiply matrix with ${matrix1.columns} columns
                             by matrix with ${matrix2.rows} rows!`;
             throw new MatrixMultiplicationException(message);
         }
@@ -373,6 +431,7 @@ class MatrixOperations {
         return newMat;
     }
 
+    //Returns new Matrix full of zeroes
     static getNewMatrix(rows, columns) {
         let tempMat = Array(rows);
         for(let i = 0 ; i < tempMat.length ; ++i) {

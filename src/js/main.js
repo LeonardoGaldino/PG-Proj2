@@ -3,6 +3,8 @@
 var scenarioObjects;
 //Application Camera
 var scenarioCamera;
+//Camera transformation Matrix
+var cameraTransfMatrix;
 
 //Parses object file content into objects
 var storeObjectFileContent = (fileContent, fileName) => {
@@ -13,7 +15,6 @@ var storeObjectFileContent = (fileContent, fileName) => {
 	let numPoints = parseInt(limits[0]);
 	let numTriangles = parseInt(limits[1]);
 	let idx;
-
 	//Creates Points
 	for(idx = 1 ; idx <= numPoints ; ++idx) {
 		let coords = lines[idx].split(' ');
@@ -26,6 +27,7 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			throw new PointCoordinateParseException(exceptionMessage);
 		}
 		let newPoint = new Point(x,y,z);
+		newPoint = newPoint.baseChange(cameraTransfMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
 		newPoint.normalVector = new Vector(0,0,0); //Adds the Normal Vector
 		newObject.points.push(newPoint);
@@ -94,6 +96,7 @@ var storeCameraFileContent = (fileContent, fileName) => {
 	let hy = inputs[3][2];
 
 	scenarioCamera = new Camera(focusPoint, directionVector, upVector, dist, hx, hy);
+	initializeCameraMatrix();
 }
 
 //Loads objects files and store them into objects
@@ -140,6 +143,20 @@ var loadCamera = () => {
 	fileParser.readAsText(cameraInputFile); //This is an async function
 }
 
+//Initialize Camera Matrix with it's Vectors
+var initializeCameraMatrix = () => {
+	cameraTransfMatrix = new Matrix({
+		rows: 3,
+		columns: 3,
+		matrix: [
+					scenarioCamera.thirdVector.toArray(false),    //U
+					scenarioCamera.upVector.toArray(false),       //V
+					scenarioCamera.directionVector.toArray(false) //N
+				],
+		extraDimension: true
+	})
+}
+
 //Validates if user selected one or more object files
 //Validates if user selected exactly one camera file
 var validateFilesInputs = () => {
@@ -158,12 +175,13 @@ var loadFiles = () => {
 		return;
 	}
 
-	scenarioObjects = []; //Erases all scenarios objects
-	//Loads all objects into scenarioObjects
-	loadObjects();
+	//Erases all scenarios objects
+	scenarioObjects = [];
 
 	//Reads Camera into scenarioCamera
 	loadCamera();
 
+	//Loads all objects into scenarioObjects
+	loadObjects();
 }
 
