@@ -214,11 +214,13 @@ class Camera {
         this.initializeCamera();
     }
 
+    //Calls for Camera's initializers methods
     initializeCamera() {
         this.ortogonalize();
         this.initializeThirdVector();
     }
 
+    //Ortogonalizes DirectionVector with NormalVector
     ortogonalize() {
         let projectionVector = this.vOperations.vectorProjection
                             (this.directionVector, this.normalVector);
@@ -227,6 +229,8 @@ class Camera {
         this.directionVector = this.directionVector.getNormalizedVector();
     }
 
+    //Calculates Third Vector using Vectorial Product between
+                                    //Direction and Normal Vectors
     initializeThirdVector() {
         this.thirdVector = this.vOperations.vectorialProduct
             (this.directionVector, this.normalVector);
