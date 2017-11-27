@@ -241,10 +241,10 @@ class Object3D {
 */
 class Camera {
 
-    constructor(focus, directionVector, normalVector, dist, hx, hy) { 
+    constructor(focus, directionVector, upVector, dist, hx, hy) { 
         this.focus = focus;
         this.directionVector = directionVector;
-        this.normalVector = normalVector;
+        this.upVector = upVector;
         this.dist = dist;
         this.hx = hx;
         this.hy = hy;
@@ -256,23 +256,23 @@ class Camera {
     initializeCamera() {
         this.ortogonalize();
         this.directionVector = this.directionVector.getNormalizedVector();
-        this.normalVector = this.normalVector.getNormalizedVector();        
+        this.upVector = this.upVector.getNormalizedVector();        
         this.initializeThirdVector();
     }
 
-    //Ortogonalizes DirectionVector with NormalVector
+    //Ortogonalizes UpVector with DirectionVector
     ortogonalize() {
         let projectionVector = VectorOperations.vectorProjection
-                            (this.directionVector, this.normalVector);
-        this.directionVector = VectorOperations.subtract
-                            (this.directionVector, projectionVector);
+                            (this.upVector, this.directionVector);
+        this.upVector = VectorOperations.subtract
+                            (this.upVector, projectionVector);
     }
 
     //Calculates Third Vector using Vectorial Product between
                                     //Direction and Normal Vectors
     initializeThirdVector() {
         this.thirdVector = VectorOperations.vectorialProduct
-            (this.directionVector, this.normalVector).getNormalizedVector();
+            (this.directionVector, this.upVector);
     }
 
 }

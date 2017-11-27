@@ -1,3 +1,9 @@
+
+//Array of Object3D objects to be rendered
+var scenarioObjects;
+//Application Camera
+var scenarioCamera;
+
 //Parses object file content into objects
 var storeObjectFileContent = (fileContent, fileName) => {
 	let objectName = getObjectName(fileName);
@@ -82,12 +88,12 @@ var storeCameraFileContent = (fileContent, fileName) => {
 
 	let focusPoint = new Point(inputs[0][0], inputs[0][1], inputs[0][2]);
 	let directionVector = new Vector(inputs[1][0], inputs[1][1], inputs[1][2]);
-	let normalVector = new Vector(inputs[2][0], inputs[2][1], inputs[2][2]);
+	let upVector = new Vector(inputs[2][0], inputs[2][1], inputs[2][2]);
 	let dist = inputs[3][0];
 	let hx = inputs[3][1];
 	let hy = inputs[3][2];
 
-	scenarioCamera = new Camera(focusPoint, directionVector, normalVector, dist, hx, hy);
+	scenarioCamera = new Camera(focusPoint, directionVector, upVector, dist, hx, hy);
 }
 
 //Loads objects files and store them into objects
@@ -160,9 +166,4 @@ var loadFiles = () => {
 	loadCamera();
 
 }
-
-//Array of Object3D objects to be rendered
-var scenarioObjects;
-//Application Camera
-var scenarioCamera;
 
