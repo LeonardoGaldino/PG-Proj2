@@ -4,8 +4,6 @@ var storeObjectFileContent = (fileContent, fileName) => {
 	let newObject = new Object3D(objectName);
 	let lines = fileContent.split('\n');
 	let limits = lines[0].split(' ');
-	let numPoints = limits[0];
-	let numTriangles = limits[1];
 	let numPoints = parseInt(limits[0]);
 	let numTriangles = parseInt(limits[1]);
 	let idx;
@@ -22,12 +20,12 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			throw new PointCoordinateParseException(exceptionMessage);
 		}
 		let newPoint = new Point(x,y,z);
-		newPoint.id = (idx-1);
+		newPoint.id = (idx-1); //Adds Point's identifier
+		newPoint.normalVector = new Vector(0,0,0); //Adds the Normal Vector
 		newObject.points.push(newPoint);
 	}
 
 	//Creates triangles
-	for(; idx < numTriangles ; ++idx) {
 	for(; idx < lines.length ; ++idx) {
 		let points = lines[idx].split(' ');
 		if(points.length < 3) { // Avoid blank lines that separates the input
@@ -44,10 +42,22 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			let exceptionMessage = `Arquivo ${fileName}: Triângulo ${idx} com referência para ponto inválida. Revise o arquivo enviado.`
 			throw new PointReferenceException(exceptionMessage);	
 		}
+		let newTriangle = new Triangle(newObject.points[p1-1], 
+								newObject.points[p2-1], newObject.points[p3-1]);
+		newObject.triangles.push(newTriangle);
+		let tNormalVector = newTriangle.normalVector;
+		newObject.points[p1-1].normalVector = 
+				VectorOperations.add(newObject.points[p1-1].normalVector, tNormalVector);
+		newObject.points[p2-1].normalVector = 
+				VectorOperations.add(newObject.points[p2-1].normalVector, tNormalVector);
+		newObject.points[p3-1].normalVector = 
+				VectorOperations.add(newObject.points[p3-1].normalVector, tNormalVector);
+	}
 
-		newObject.triangles.push(new Triangle(newObject.points[p1-1],
-											newObject.points[p2-1],
-											newObject.points[p3-1]));
+	//Normalize Points normal Vector
+	for(let idx = 0 ; idx < newObject.points.length ; ++idx) {
+		let point = newObject.points[idx];
+		point.normalVector = point.normalVector.getNormalizedVector();
 	}
 
 	//Saves new Object3D

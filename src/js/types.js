@@ -2,7 +2,7 @@
 const EPS = 1e-10;
 
 //Shortcut for returning last element of Arrays
-Array.prototype.last = function(){
+Array.prototype.back = function(){
     return this[this.length - 1];
 };
 
@@ -128,6 +128,16 @@ class PointOperations {
 class VectorOperations {
 
     constructor() { }
+
+    /* Adds one Vector from other
+        - Returns a Vector
+    */
+    static add(vector1, vector2) {
+        let newCoords = vector1.coordinates.map( (coordinate, idx) => {
+            return (coordinate + vector2.coordinates[idx]);
+        });
+        return new Vector(newCoords[0], newCoords[1], newCoords[2]);
+    }
 
     /* Subtracts one Vector from other
         - Returns a Vector
