@@ -102,6 +102,16 @@ class VectorOperations {
 
     constructor() { }
 
+    /* Subtracts one Vector from other
+        - Returns a Vector
+    */
+    subtract(vector1, vector2) {
+        let newCoords = vector1.coordinates.map( (coordinate, idx) => {
+            return (coordinate - vector2.coordinates[idx]);
+        });
+        return new Vector(newCoords[0], newCoords[1], newCoords[2]);
+    }
+
     /*Multiplication for a scalar number
         - Receives a Vector and a number as input
         - Returns new Vector (the input Vector multiplied by k)
@@ -199,6 +209,27 @@ class Camera {
         this.dist = dist;
         this.hx = hx;
         this.hy = hy;
+        this.vOperations = new VectorOperations();
+
+        this.initializeCamera();
+    }
+
+    initializeCamera() {
+        this.ortogonalize();
+        this.initializeThirdVector();
+    }
+
+    ortogonalize() {
+        let projectionVector = this.vOperations.vectorProjection
+                            (this.directionVector, this.normalVector);
+        this.directionVector = this.vOperations.subtract
+                            (this.directionVector, projectionVector);
+        this.directionVector = this.directionVector.getNormalizedVector();
+    }
+
+    initializeThirdVector() {
+        this.thirdVector = this.vOperations.vectorialProduct
+            (this.directionVector, this.normalVector);
     }
 
 }

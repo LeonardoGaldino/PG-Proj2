@@ -147,6 +147,7 @@ var loadFiles = () => {
 }
 
 //Array of Object3D objects to be rendered
-let scenarioObjects;
-let scenarioCamera;
+var scenarioObjects;
+//Application Camera
+var scenarioCamera;
 
