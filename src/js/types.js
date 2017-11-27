@@ -80,17 +80,7 @@ class Triangle {
         - Calculated using Vectorial product method
     */
     getArea() {
-        let point1 = this.points[0];
-        let point2 = this.points[1];
-        let point3 = this.points[2];
-        let v1 = new Vector(point3.coordinates[0] - point1.coordinates[0],
-                            point3.coordinates[1] - point1.coordinates[1],
-                            point3.coordinates[2] - point1.coordinates[2]);
-        let v2 = new Vector(point2.coordinates[0] - point1.coordinates[0],
-                            point2.coordinates[1] - point1.coordinates[1],
-                            point2.coordinates[2] - point1.coordinates[2]);
-        let ortogonalVector = VectorOperations.vectorialProduct(v1,v2);
-        return (ortogonalVector.getNorm()/2);
+        return (this.normalVector.getNorm()/2);
     }
 
     calculateNormalVector() {
@@ -108,6 +98,9 @@ class PointOperations {
     
     constructor() { }
 
+    /* Subtracts one Point from other
+        - Returns a Vector
+    */
     static subtract(point1, point2) {
         let newCoords = point1.coordinates.map( (coordinate, idx) => {
             return (coordinate - point2.coordinates[idx]);
