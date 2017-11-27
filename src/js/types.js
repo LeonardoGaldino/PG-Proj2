@@ -83,10 +83,14 @@ class Triangle {
         return (this.normalVector.getNorm()/2);
     }
 
+    /*Calculate the normal Vector of the triangle
+        - Calculated using Vectorial product method
+        - Add the computed Vector to triangle properties
+    */
     calculateNormalVector() {
         let v1 = PointOperations.subtract(this.points[2], this.points[0]);
         let v2 = PointOperations.subtract(this.points[1], this.points[0]);
-        this.normalVector = VectorOperations.vectorialProduct(v1,v2);
+        this.normalVector = VectorOperations.vectorialProduct(v1,v2).getNormalizedVector();
     }
 
 }
@@ -231,6 +235,8 @@ class Camera {
     //Calls for Camera's initializers methods
     initializeCamera() {
         this.ortogonalize();
+        this.directionVector = this.directionVector.getNormalizedVector();
+        this.normalVector = this.normalVector.getNormalizedVector();        
         this.initializeThirdVector();
     }
 
@@ -240,14 +246,13 @@ class Camera {
                             (this.directionVector, this.normalVector);
         this.directionVector = VectorOperations.subtract
                             (this.directionVector, projectionVector);
-        this.directionVector = this.directionVector.getNormalizedVector();
     }
 
     //Calculates Third Vector using Vectorial Product between
                                     //Direction and Normal Vectors
     initializeThirdVector() {
         this.thirdVector = VectorOperations.vectorialProduct
-            (this.directionVector, this.normalVector);
+            (this.directionVector, this.normalVector).getNormalizedVector();
     }
 
 }
