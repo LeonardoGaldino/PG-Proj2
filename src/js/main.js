@@ -6,7 +6,6 @@ var storeObjectFileContent = (fileContent, fileName) => {
 	let limits = lines[0].split(' ');
 	let numPoints = limits[0];
 	let numTriangles = limits[1];
-	let objectPoints = [];
 	let idx;
 
 	//Creates Points
@@ -20,8 +19,9 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			let exceptionMessage = `Arquivo ${fileName}: Ponto ${idx} com coordenada inválida. Revise o arquivo enviado.`
 			throw new PointCoordinateParseException(exceptionMessage);
 		}
-
-		objectPoints.push(new Point(x, y, z));
+		let newPoint = new Point(x,y,z);
+		newPoint.id = (idx-1);
+		newObject.points.push(newPoint);
 	}
 
 	//Creates triangles
@@ -31,18 +31,20 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			++numTriangles;
 			continue;
 		}
-		let p1 = parseFloat(points[0]);
-		let p2 = parseFloat(points[1]);
-		let p3 = parseFloat(points[2]);
+		let p1 = parseInt(points[0]);
+		let p2 = parseInt(points[1]);
+		let p3 = parseInt(points[2]);
 
-		if(isNaN(p1) || isNaN(p2) || isNaN(p3)) {
+		if(isNaN(p1) || isNaN(p2) || isNaN(p3) ||
+			p1 < 1 || p1 > newObject.points.length || p2 < 1 || p2 > newObject.points.length
+			|| p3 < 1 || p2 > newObject.points.length) {
 			let exceptionMessage = `Arquivo ${fileName}: Triângulo ${idx} com referência para ponto inválida. Revise o arquivo enviado.`
 			throw new PointReferenceException(exceptionMessage);	
 		}
 
-		newObject.triangles.push(new Triangle(objectPoints[p1-1],
-											objectPoints[p2-1],
-											objectPoints[p3-1]));
+		newObject.triangles.push(new Triangle(newObject.points[p1-1],
+											newObject.points[p2-1],
+											newObject.points[p3-1]));
 	}
 
 	//Saves new Object3D

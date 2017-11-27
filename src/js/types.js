@@ -209,12 +209,14 @@ class VectorOperations {
     - 3DObject would not fit good
     - Represented by several triangles
     - Each triangle has 3 Points
+    - Each point is stored in points array
 */
 class Object3D {
 
     constructor(objectName) {
         this.objectName = objectName;
         this.triangles = [];
+        this.points = [];
     }
 
 }
