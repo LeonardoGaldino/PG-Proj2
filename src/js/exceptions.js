@@ -17,3 +17,8 @@ function MatrixSizeException(message) {
 	this.message = message;
 	this.name = 'MatrixSizeException';	
 }
+
+function MatrixMultiplicationException(message) {
+	this.message = message;
+	this.name = 'MatrixMultiplicationException';	
+}
