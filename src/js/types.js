@@ -28,6 +28,15 @@ class Triple {
         });
     }
 
+    /*Triple to array
+        - Returns an array with triple's coordinates + isPoint
+    */
+    toArray() {
+        return this.coordinates.map( (coordinate) => {
+            return coordinate;
+        }).push(this.isPoint);
+    }
+
 }
 
 /* Class designed to represent 3D Points
@@ -212,7 +221,6 @@ class VectorOperations {
                             coordsV1[0]*coordsV2[1] - coordsV1[1]*coordsV2[0]);
     }
 
-
 }
 
 /* Class designed to represent Object that will be drawn
@@ -273,6 +281,49 @@ class Camera {
     initializeThirdVector() {
         this.thirdVector = VectorOperations.vectorialProduct
             (this.directionVector, this.upVector);
+    }
+
+}
+
+class Color {
+    constructor (red, blue, green) {
+        this.rgb = {
+            red: red,
+            blue: blue,
+            green: green
+        };
+    }
+}
+
+class Illumination {
+
+    constructor(position, ambRefl, ambColor, difConstant, difVector, spec, sourceColor, rugosity) {
+        this.position = position;
+        this.ambRefl = ambRefl;
+        this.ambColor = ambColor;
+        this.difConstant = difConstant;
+        this.difVector = difVector;
+        this.spec = spec;
+        this.sourceColor = sourceColor;
+        this.rugosity = rugosity;
+    }
+
+}
+
+class Matrix {
+
+    constructor(rows, columns, mat) {
+        this.rows = rows;
+        this.columns = columns;
+        this.matrix = matrix;
+        validate();
+    }
+
+    validate() {
+        for(let idx = 0 ; idx < this.matrix.length()-1 ; ++idx) {
+            if(this.matrix[idx].length != this.matrix[idx+1].length)
+                throw new MatrixSizeException('Matrizes com linhas de diferentes tamanhos.');
+        }
     }
 
 }
