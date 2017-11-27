@@ -1,6 +1,11 @@
 //Precision
 const EPS = 1e-10;
 
+//Shortcut for returning last element of Arrays
+Array.prototype.last = function(){
+    return this[this.length - 1];
+};
+
 /* Base class of a point or a vector
     - isPoint differs Vector from Point
     - isPoint = 1 -> Triple represents a Point
