@@ -1,10 +1,12 @@
-
 //Array of Object3D objects to be rendered
 var scenarioObjects;
 //Application Camera
 var scenarioCamera;
 //Camera transformation Matrix
 var cameraTransfMatrix;
+//Application light source
+var scenarioLight;
+
 
 //Parses object file content into objects
 var storeObjectFileContent = (fileContent, fileName) => {
@@ -27,6 +29,7 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			throw new PointCoordinateParseException(exceptionMessage);
 		}
 		let newPoint = new Point(x,y,z);
+		//Changes base of newPoint to camera's base system
 		newPoint = newPoint.baseChange(cameraTransfMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
 		newPoint.normalVector = new Vector(0,0,0); //Adds the Normal Vector
@@ -99,48 +102,55 @@ var storeCameraFileContent = (fileContent, fileName) => {
 	initializeCameraMatrix();
 }
 
-//Loads objects files and store them into objects
-var loadObjects = () => {
-	let fileInputNode = document.getElementById('file-input-field'); //File Input DOM node
-	let objectInputFiles = fileInputNode.files; //Array of selected objects
+//Parses light file content into scenarioLight
+var storeLightFileContent = (fileContent, fileName) => {
+	let lines = fileContent.split('\n');
+	let inputs = [];
+	for(let idx = 0 ; idx < 8 ; ++idx) {
+		let lineElements = lines[idx].split(' ');
+		inputs.push(lineElements);
+	}
 
-	//Reads Objects
-	for(let idx = 0; idx < objectInputFiles.length ; ++idx) { //For each file, parse it and load its content
-		let file = objectInputFiles[idx];
+	let focus = new Point(parseFloat(inputs[0][0]),
+						parseFloat(inputs[0][1]), parseFloat(inputs[0][2]));
+	//Changes base of focus to camera's base system
+	focus = focus.baseChange(cameraTransfMatrix);
+	let ambRefl = parseFloat(inputs[1][0]);
+	let ambColor = [parseInt(inputs[2][0]), parseInt(inputs[2][1]), 
+							parseInt(inputs[2][2])];
+	let difConstant = parseFloat(inputs[3][0]);
+	let difVector = [parseFloat(inputs[4][0]), parseFloat(inputs[4][1]),
+							parseFloat(inputs[4][2])];
+	let spec = parseFloat(inputs[5][0]);
+	let sourceColor = [parseInt(inputs[6][0]), parseInt(inputs[6][1]), parseInt(inputs[6][2])];
+	let rugosity = parseFloat(inputs[7][0]);
+
+	scenarioLight = new Illumination(focus, ambRefl, ambColor, difConstant, 
+										difVector, spec, sourceColor, rugosity);
+}
+
+//Generic function to load files
+var loadFiles = (fieldId, callbackFunction) => {
+	let inputNode = document.getElementById(fieldId);
+	let inputFiles = inputNode.files;
+
+	for(let i = 0 ; i < inputFiles.length ; ++i) {
+		let file = inputFiles[i];
 		let fileParser = new FileReader();
 
 		fileParser.onload = function(loadEvent) { //Callback for file loaded
 			let parser = loadEvent.target;
 			let result = parser.result; //holds the file content
-			storeObjectFileContent(result, file.name);
+			callbackFunction(result, file.name);
 		};
 
 		fileParser.onerror = function(errorEvent) { //Handle error while loading file
-			throw new FileReadException('Erro ao carregar arquivo. Selecione arquivos de texto!');
+			throw new FileReadException(`Erro ao carregar arquivo ${file.name}. Selecione arquivos de texto!`);
 		}
 
 		fileParser.readAsText(file); //This is an async function
 	}
-}
 
-//Loads camera file and store it into camera object
-var loadCamera = () => {
-	let cameraInputNode = document.getElementById('camera-input-field'); //File Input DOM node
-	let cameraInputFile = cameraInputNode.files[0]; //Camera file is always at index 0
-
-	let fileParser = new FileReader();
-
-	fileParser.onload = function(loadEvent) { //Callback for file loaded
-		let parser = loadEvent.target;
-		let result = parser.result; //holds the file content
-		storeCameraFileContent(result, cameraInputFile.name);
-	};
-
-	fileParser.onerror = function(errorEvent) { //Handle error while loading file
-		throw new FileReadException('Erro ao carregar arquivo. Selecione arquivos de texto!');
-	}
-
-	fileParser.readAsText(cameraInputFile); //This is an async function
 }
 
 //Initialize Camera Matrix with it's Vectors
@@ -160,18 +170,20 @@ var initializeCameraMatrix = () => {
 //Validates if user selected one or more object files
 //Validates if user selected exactly one camera file
 var validateFilesInputs = () => {
-	let fileInputNode = document.getElementById('file-input-field'); //File Input DOM node
-	let cameraInputNode = document.getElementById('camera-input-field'); //Camera Input DOM node
+	let fileInputNode = document.getElementById('file-input-field'); //File DOM node
+	let cameraInputNode = document.getElementById('camera-input-field'); //Camera DOM node
+	let lightInputNode = document.getElementById('light-input-field'); //Illumination DOM node
 	let numObjectFiles = fileInputNode.files.length; //Number of selected objects files
 	let numCameraFiles = cameraInputNode.files.length; //Number of selected camera files
-	return ( (numCameraFiles == 1) && (numObjectFiles > 0) );
+	let numLightFiles = lightInputNode.files.length // Number of selected light files
+	return ( (numCameraFiles == 1) && (numObjectFiles > 0) && (numLightFiles > 0) );
 }
 
 //Load all the selected files and parses it into objects
-var loadFiles = () => {
+var runApp = () => {
 	//Validates if files are correctly submitted
 	if(!validateFilesInputs()) {
-		Materialize.toast('Selecione uma câmera e um ou mais objetos!', 4000);
+		Materialize.toast('Selecione uma câmera, uma iluminação e um ou mais objetos!', 4000);
 		return;
 	}
 
@@ -179,9 +191,11 @@ var loadFiles = () => {
 	scenarioObjects = [];
 
 	//Reads Camera into scenarioCamera
-	loadCamera();
+	loadFiles('camera-input-field', storeCameraFileContent);
 
 	//Loads all objects into scenarioObjects
-	loadObjects();
-}
+	loadFiles('file-input-field', storeObjectFileContent);
 
+	//Load illumination files into scenarioLight
+	loadFiles('light-input-field', storeLightFileContent);
+}

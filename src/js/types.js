@@ -349,8 +349,8 @@ class Color {
 */
 class Illumination {
 
-    constructor(position, ambRefl, ambColor, difConstant, difVector, spec, sourceColor, rugosity) {
-        this.position = position;
+    constructor(focus, ambRefl, ambColor, difConstant, difVector, spec, sourceColor, rugosity) {
+        this.focus = focus;
         this.ambRefl = ambRefl;
         this.ambColor = ambColor;
         this.difConstant = difConstant;
