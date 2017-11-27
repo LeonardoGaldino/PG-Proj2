@@ -321,6 +321,20 @@ class Matrix {
         } else {
             this.initializeMatrix();
         }
+        if(matrixConfiguration.extraDimension) {
+            this.addExtraDimension();
+        }
+    }
+
+    addExtraDimension() {
+        for(let i = 0 ; i < this.rows ; ++i)
+            this.matrix[i].push(0);
+        let tempArray = new Array(this.columns);
+        tempArray.fill(0);
+        tempArray.push(1);
+        this.matrix.push(tempArray);
+        ++this.rows;
+        ++this.columns;
     }
 
     initializeMatrix() {
@@ -374,4 +388,5 @@ class MatrixOperations {
 
         return newMat;
     }
+
 }
