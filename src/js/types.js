@@ -73,6 +73,7 @@ class Triangle {
 
     constructor(point1, point2, point3) {
         this.points = [point1, point2, point3];
+        this.calculateNormalVector();
     }
 
     /*Current Triangle area
@@ -88,15 +89,36 @@ class Triangle {
         let v2 = new Vector(point2.coordinates[0] - point1.coordinates[0],
                             point2.coordinates[1] - point1.coordinates[1],
                             point2.coordinates[2] - point1.coordinates[2]);
-        let vOperations = new VectorOperations();
-        let ortogonalVector = vOperations.vectorialProduct(v1,v2);
+        let ortogonalVector = VectorOperations.vectorialProduct(v1,v2);
         return (ortogonalVector.getNorm()/2);
+    }
+
+    calculateNormalVector() {
+        let v1 = PointOperations.subtract(this.points[2], this.points[0]);
+        let v2 = PointOperations.subtract(this.points[1], this.points[0]);
+        this.normalVector = VectorOperations.vectorialProduct(v1,v2);
+    }
+
+}
+
+/* Class designed to Operate with Points
+    - Encapsulates Points operations
+*/
+class PointOperations {
+    
+    constructor() { }
+
+    static subtract(point1, point2) {
+        let newCoords = point1.coordinates.map( (coordinate, idx) => {
+            return (coordinate - point2.coordinates[idx]);
+        });
+        return new Vector(newCoords[0], newCoords[1], newCoords[2]); 
     }
 
 }
 
 /* Class designed to Operate with Vectors
-    - Encapsulates vectors operations
+    - Encapsulates Vectors operations
 */
 class VectorOperations {
 
@@ -105,7 +127,7 @@ class VectorOperations {
     /* Subtracts one Vector from other
         - Returns a Vector
     */
-    subtract(vector1, vector2) {
+    static subtract(vector1, vector2) {
         let newCoords = vector1.coordinates.map( (coordinate, idx) => {
             return (coordinate - vector2.coordinates[idx]);
         });
@@ -118,7 +140,7 @@ class VectorOperations {
         - Returned Vector is a multiple of input Vector
         - Doesn't change input Vector!
     */
-    scalarMultiplication(vector, k) { 
+    static scalarMultiplication(vector, k) { 
         let newVector = new Vector(vector.coordinates[0],
                                     vector.coordinates[1],
                                     vector.coordinates[2]);
@@ -133,7 +155,7 @@ class VectorOperations {
         - Returns a Point
         - Returned Point is the input Point translated in direction of the vector
     */
-    addPoint(vector, point) {
+    static addPoint(vector, point) {
         let newCoords = vector.coordinates.map( (coordinate, idx) => {
             return (coordinate + point.coordinates[idx]);
         })
@@ -145,7 +167,7 @@ class VectorOperations {
         - Returns the projections of first input Vector on the second
         - Returned Vector is a multiple of the second Vector
     */
-    vectorProjection(vector1, vector2) {
+    static vectorProjection(vector1, vector2) {
         let scalarNominator = this.scalarProduct(vector1, vector2);
         let scalarDenominator = this.scalarProduct(vector2, vector2);
         return this.scalarMultiplication(vector2, (scalarNominator/scalarDenominator));
@@ -156,7 +178,7 @@ class VectorOperations {
         - Returns a scalar value
         - YOLO!
     */
-    scalarProduct(vector1, vector2) {
+    static scalarProduct(vector1, vector2) {
         return vector1.coordinates.reduce( (prevValue, curValue, idx) => {
             return (prevValue + curValue*vector2.coordinates[idx]);
         }, 0);
@@ -167,7 +189,7 @@ class VectorOperations {
         - Returns a third Vector as output
         - Returned Vector is ortogonal to both input Vectors
     */
-    vectorialProduct(vector1, vector2) {
+    static vectorialProduct(vector1, vector2) {
         let coordsV1 = vector1.coordinates;
         let coordsV2 = vector2.coordinates;
         return new Vector(coordsV1[1]*coordsV2[2] - coordsV1[2]*coordsV2[1],
@@ -209,7 +231,6 @@ class Camera {
         this.dist = dist;
         this.hx = hx;
         this.hy = hy;
-        this.vOperations = new VectorOperations();
 
         this.initializeCamera();
     }
@@ -222,9 +243,9 @@ class Camera {
 
     //Ortogonalizes DirectionVector with NormalVector
     ortogonalize() {
-        let projectionVector = this.vOperations.vectorProjection
+        let projectionVector = VectorOperations.vectorProjection
                             (this.directionVector, this.normalVector);
-        this.directionVector = this.vOperations.subtract
+        this.directionVector = VectorOperations.subtract
                             (this.directionVector, projectionVector);
         this.directionVector = this.directionVector.getNormalizedVector();
     }
@@ -232,7 +253,7 @@ class Camera {
     //Calculates Third Vector using Vectorial Product between
                                     //Direction and Normal Vectors
     initializeThirdVector() {
-        this.thirdVector = this.vOperations.vectorialProduct
+        this.thirdVector = VectorOperations.vectorialProduct
             (this.directionVector, this.normalVector);
     }
 
