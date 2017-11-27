@@ -6,6 +6,8 @@ var storeObjectFileContent = (fileContent, fileName) => {
 	let limits = lines[0].split(' ');
 	let numPoints = limits[0];
 	let numTriangles = limits[1];
+	let numPoints = parseInt(limits[0]);
+	let numTriangles = parseInt(limits[1]);
 	let idx;
 
 	//Creates Points
@@ -26,6 +28,7 @@ var storeObjectFileContent = (fileContent, fileName) => {
 
 	//Creates triangles
 	for(; idx < numTriangles ; ++idx) {
+	for(; idx < lines.length ; ++idx) {
 		let points = lines[idx].split(' ');
 		if(points.length < 3) { // Avoid blank lines that separates the input
 			++numTriangles;
