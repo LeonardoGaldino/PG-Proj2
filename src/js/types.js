@@ -307,6 +307,7 @@ class Camera {
         this.directionVector = this.directionVector.getNormalizedVector();
         this.upVector = this.upVector.getNormalizedVector();        
         this.initializeThirdVector();
+        this.initializeCameraMatrix();
     }
 
     //Ortogonalizes UpVector with DirectionVector
@@ -322,6 +323,20 @@ class Camera {
     initializeThirdVector() {
         this.thirdVector = VectorOperations.vectorialProduct
             (this.directionVector, this.upVector);
+    }
+
+    //Initialize Camera Matrix with it's Vectors
+    initializeCameraMatrix() {
+        this.transformMatrix = new Matrix({
+            rows: 3,
+            columns: 3,
+            matrix: [
+                        this.thirdVector.toArray(false),    //U
+                        this.upVector.toArray(false),       //V
+                        this.directionVector.toArray(false) //N
+                    ],
+            extraDimension: true
+        });
     }
 
 }

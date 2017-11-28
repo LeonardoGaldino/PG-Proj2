@@ -2,8 +2,6 @@
 var scenarioObjects;
 //Application Camera
 var scenarioCamera;
-//Camera transformation Matrix
-var cameraTransfMatrix;
 //Application light source
 var scenarioLight;
 
@@ -32,10 +30,10 @@ var storeObjectFileContent = (fileContent, fileName) => {
 		//Changes newPoint to camera's point origin
 		let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
 											-scenarioCamera.focus.coordinates[1],
-											-scenarioCamera.focus.coordinates[2],)
+											-scenarioCamera.focus.coordinates[2]);
 		newPoint = PointOperations.addVector(newPoint, originChangeVector);
 		//Changes base of newPoint to camera's base system
-		newPoint = newPoint.baseChange(cameraTransfMatrix);
+		newPoint = newPoint.baseChange(scenarioCamera.transformMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
 		newPoint.normalVector = new Vector(0,0,0); //Adds the Normal Vector
 		newObject.points.push(newPoint);
@@ -104,7 +102,6 @@ var storeCameraFileContent = (fileContent, fileName) => {
 	let hy = inputs[3][2];
 
 	scenarioCamera = new Camera(focusPoint, directionVector, upVector, dist, hx, hy);
-	initializeCameraMatrix();
 }
 
 //Parses light file content into scenarioLight
@@ -118,8 +115,13 @@ var storeLightFileContent = (fileContent, fileName) => {
 
 	let focus = new Point(parseFloat(inputs[0][0]),
 						parseFloat(inputs[0][1]), parseFloat(inputs[0][2]));
+	//Changes focus to camera's point origin
+	let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
+											-scenarioCamera.focus.coordinates[1],
+											-scenarioCamera.focus.coordinates[2]);
+	focus = PointOperations.addVector(focus, originChangeVector);
 	//Changes base of focus to camera's base system
-	focus = focus.baseChange(cameraTransfMatrix);
+	focus = focus.baseChange(scenarioCamera.transformMatrix);
 	let ambRefl = parseFloat(inputs[1][0]);
 	let ambColor = [parseInt(inputs[2][0]), parseInt(inputs[2][1]), 
 							parseInt(inputs[2][2])];
@@ -156,20 +158,6 @@ var loadFiles = (fieldId, callbackFunction) => {
 		fileParser.readAsText(file); //This is an async function
 	}
 
-}
-
-//Initialize Camera Matrix with it's Vectors
-var initializeCameraMatrix = () => {
-	cameraTransfMatrix = new Matrix({
-		rows: 3,
-		columns: 3,
-		matrix: [
-					scenarioCamera.thirdVector.toArray(false),    //U
-					scenarioCamera.upVector.toArray(false),       //V
-					scenarioCamera.directionVector.toArray(false) //N
-				],
-		extraDimension: true
-	})
 }
 
 //Validates if user selected one or more object files
