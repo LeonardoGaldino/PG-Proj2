@@ -88,13 +88,12 @@ class Vector extends Triple {
     }
 
     /*Gets length of current Vector
-
+        - YOLO
     */
     getNorm() {
-        let x2 = this.coordinates[0]*this.coordinates[0];
-        let y2 = this.coordinates[1]*this.coordinates[1];
-        let z2 = this.coordinates[2]*this.coordinates[2];
-        return Math.sqrt(x2+y2+z2);
+        return Math.sqrt(this.coordinates.reduce((prev, coordinate) => {
+            return (prev + (coordinate*coordinate));
+        }, 0));
     }
 
     /*Normalization of current Vector
