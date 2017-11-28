@@ -268,8 +268,8 @@ class Object3D {
 
 /* Class designed to represent Camera of the scenario
     - Focus is the mundial coordinates of the focus of the camera
-    - DirectionVector is the direction the camera is 'looking' at
-    - NormalVector points to the 'head' of the camera
+    - DirectionVector is the direction the camera is 'looking' at (N)
+    - UpVector points to the 'head' of the camera (V)
     - Dist is the distance between the camera and the screen
     - Hx is the horizontal length of the screen (width)
     - Hy is the vertical length of the screen (height)
