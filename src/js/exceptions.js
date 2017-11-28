@@ -16,6 +16,12 @@ function PointReferenceException(message) {
 	this.name = 'PointReferenceException';
 }
 
+function PointSumException(message) {
+	alert('Erro! Abra o console para saber mais.');
+	this.message = message;
+	this.name = 'PointSumException';	
+}
+
 function MatrixSizeException(message) {
 	alert('Erro! Abra o console para saber mais.');
 	this.message = message;

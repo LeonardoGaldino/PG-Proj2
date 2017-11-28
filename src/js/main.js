@@ -29,6 +29,11 @@ var storeObjectFileContent = (fileContent, fileName) => {
 			throw new PointCoordinateParseException(exceptionMessage);
 		}
 		let newPoint = new Point(x,y,z);
+		//Changes newPoint to camera's point origin
+		let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
+											-scenarioCamera.focus.coordinates[1],
+											-scenarioCamera.focus.coordinates[2],)
+		newPoint = PointOperations.addVector(newPoint, originChangeVector);
 		//Changes base of newPoint to camera's base system
 		newPoint = newPoint.baseChange(cameraTransfMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
