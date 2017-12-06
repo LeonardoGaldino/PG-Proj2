@@ -1,12 +1,16 @@
-#main-canvas {
-	height: 500px;
-	width: 500px;
-}
-
 #button-wrapper {
 	padding-top: 20px;
 }
 
 #canvas-row {
-	margin-bottom: 0px;
+	margin-top: 50px;
+	margin-bottom: 15px;
+}
+
+#canvas-card {
+	margin: auto;
+	width: 500px; 
+	height: 500px; 
+	padding: 0px 0px 0px 0px;
+	background-color: #f5f5f5;
 }
