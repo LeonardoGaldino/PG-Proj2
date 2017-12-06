@@ -1,3 +1,7 @@
+let canvas = document.getElementById('main-canvas');
+let ctx = canvas.getContext('2d');
+let canvasWidth = canvas.width;
+let canvasHeight = canvas.height;
 //Array of Object3D objects to be rendered
 var scenarioObjects;
 //Application Camera
@@ -172,6 +176,10 @@ var validateFilesInputs = () => {
 	return ( (numCameraFiles == 1) && (numObjectFiles > 0) && (numLightFiles > 0) );
 }
 
+function eraseCanvas() {
+	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+}
+
 //Load all the selected files and parses it into objects
 var runApp = () => {
 	//Validates if files are correctly submitted
@@ -181,6 +189,7 @@ var runApp = () => {
 	}
 
 	//Erases all scenarios objects
+	eraseCanvas();
 	scenarioObjects = [];
 
 	//Reads Camera into scenarioCamera
