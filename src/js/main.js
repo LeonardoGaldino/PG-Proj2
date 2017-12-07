@@ -9,6 +9,57 @@ var scenarioCamera;
 //Application light source
 var scenarioLight;
 
+var getBaricentricCoordinates = (trg, point) => {
+	let origArea = trg.getArea();
+	let t1 = new Triangle2D(trg.points[0], trg.points[1], point);
+	let t2 = new Triangle2D(trg.points[0], trg.points[2], point);
+	let t3 = new Triangle2D(trg.points[1], trg.points[2], point);
+	let alpha = (t3.getArea()/origArea);
+	let beta = (t2.getArea()/origArea);
+	let gama = (t1.getArea()/origArea);
+	return [alpha, beta, gama];
+}
+
+var isInside = (baricentricCoordinates) => {
+	for(let i = 0 ; i < baricentricCoordinates.length ; ++i) {
+		let coord = baricentricCoordinates[i];
+		if(coord < 0 || coord > 1){
+			return false;
+		}
+	}
+	return true;
+}
+
+var paintObject = (object) => {
+	let triangs = object.triangles2D;
+	for(let i = 0 ; i < triangs.length ; ++i) {
+		let trg = triangs[i];
+		let xmax = -1;
+		let xmin = canvasWidth+1;
+		let ymax = -1;
+		let ymin = canvasHeight+1;
+		for(let i = 0 ; i < trg.points.length ; ++i) {
+			let p = trg.points[i];
+			if(p.coordinates[0] > xmax)
+				xmax = p.coordinates[0];
+			if(p.coordinates[0] < xmin)
+				xmin = p.coordinates[0];
+			if(p.coordinates[1] > ymax)
+				ymax = p.coordinates[1];
+			if(p.coordinates[1] < ymin)
+				ymin = p.coordinates[1];
+		}
+		for(let i = ymin ; i <= ymax ; ++i) {
+			for(let j = xmin ; j <= xmax ; ++j) {
+				let tempPoint = new Point2D(j,i);
+				let baricentricCoords = getBaricentricCoordinates(trg, tempPoint);
+				if(isInside(baricentricCoords))
+					drawPixel(ctx, j, i, 255, 0, 0, 255);
+			}
+		}
+	}
+}
+
 
 //Parses object file content into objects
 var storeObjectFileContent = (fileContent, fileName) => {
@@ -36,11 +87,21 @@ var storeObjectFileContent = (fileContent, fileName) => {
 											-scenarioCamera.focus.coordinates[1],
 											-scenarioCamera.focus.coordinates[2]);
 		newPoint = PointOperations.addVector(newPoint, originChangeVector);
+
 		//Changes base of newPoint to camera's base system
 		newPoint = newPoint.baseChange(scenarioCamera.transformMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
 		newPoint.normalVector = new Vector(0,0,0); //Adds the Normal Vector
-		newObject.points.push(newPoint);
+		newObject.points3D.push(newPoint);
+		let px = ((scenarioCamera.dist/scenarioCamera.hx)*
+					(newPoint.coordinates[0]/newPoint.coordinates[2]));
+		let py = ((scenarioCamera.dist/scenarioCamera.hy)*
+					(newPoint.coordinates[1]/newPoint.coordinates[2]));
+		px = Math.floor((px+1)*(canvasWidth/2));
+		py = Math.floor((1-py)*(canvasHeight/2));
+		let newPoint2D = new Point2D(px, py);
+		newObject.points2D.push(newPoint2D);
+		//drawPixel(ctx, px, py, 255, 0, 0, 255);
 	}
 
 	//Creates triangles
@@ -55,31 +116,36 @@ var storeObjectFileContent = (fileContent, fileName) => {
 		let p3 = parseInt(points[2]);
 
 		if(isNaN(p1) || isNaN(p2) || isNaN(p3) ||
-			p1 < 1 || p1 > newObject.points.length || p2 < 1 || p2 > newObject.points.length
-			|| p3 < 1 || p2 > newObject.points.length) {
+			p1 < 1 || p1 > newObject.points3D.length || p2 < 1 || p2 > newObject.points3D.length
+			|| p3 < 1 || p2 > newObject.points3D.length) {
 			let exceptionMessage = `Arquivo ${fileName}: Triângulo ${idx} com referência para ponto inválida. Revise o arquivo enviado.`
 			throw new PointReferenceException(exceptionMessage);	
 		}
-		let newTriangle = new Triangle(newObject.points[p1-1], 
-								newObject.points[p2-1], newObject.points[p3-1]);
-		newObject.triangles.push(newTriangle);
-		let tNormalVector = newTriangle.normalVector;
-		newObject.points[p1-1].normalVector = 
-				VectorOperations.add(newObject.points[p1-1].normalVector, tNormalVector);
-		newObject.points[p2-1].normalVector = 
-				VectorOperations.add(newObject.points[p2-1].normalVector, tNormalVector);
-		newObject.points[p3-1].normalVector = 
-				VectorOperations.add(newObject.points[p3-1].normalVector, tNormalVector);
+		let newTriangle3D = new Triangle3D(newObject.points3D[p1-1], 
+								newObject.points3D[p2-1], newObject.points3D[p3-1]);
+		newObject.triangles3D.push(newTriangle3D);
+		let tNormalVector = newTriangle3D.normalVector;
+		newObject.points3D[p1-1].normalVector = 
+				VectorOperations.add(newObject.points3D[p1-1].normalVector, tNormalVector);
+		newObject.points3D[p2-1].normalVector = 
+				VectorOperations.add(newObject.points3D[p2-1].normalVector, tNormalVector);
+		newObject.points3D[p3-1].normalVector = 
+				VectorOperations.add(newObject.points3D[p3-1].normalVector, tNormalVector);
+		let newTriangle2D = new Triangle2D(newObject.points2D[p1-1],
+					newObject.points2D[p2-1], newObject.points2D[p3-1]);
+		newObject.triangles2D.push(newTriangle2D);
 	}
 
 	//Normalize Points normal Vector
-	for(let idx = 0 ; idx < newObject.points.length ; ++idx) {
-		let point = newObject.points[idx];
+	for(let idx = 0 ; idx < newObject.points3D.length ; ++idx) {
+		let point = newObject.points3D[idx];
 		point.normalVector = point.normalVector.getNormalizedVector();
 	}
 
 	//Saves new Object3D
 	scenarioObjects.push(newObject);
+
+	paintObject(newObject);
 }
 
 //Parses camera file content into objects
@@ -200,4 +266,5 @@ var runApp = () => {
 
 	//Load illumination files into scenarioLight
 	loadFiles('light-input-field', storeLightFileContent);
+
 }
