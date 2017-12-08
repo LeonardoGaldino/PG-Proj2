@@ -169,6 +169,21 @@ class Triangle2D {
                         (semiPerimeter-edge2)*(semiPerimeter-edge3));
     }
 
+    sortPointsByY() {
+        //Comparison function to sort Points
+        let cmpFunction = (p1, p2) => {
+            if(p1.coordinates[1] < p2.coordinates[1])
+                return -1;
+            else if(p1.coordinates[1] > p2.coordinates[1])
+                return 1;
+            else if(p1.coordinates[0] < p2.coordinates[0])
+                return -1;
+            return 1;
+        };
+        //Array sort method using custom comparison function
+        this.points.sort(cmpFunction);
+    }
+
 }
 
 /* Class designed to Operate with Points

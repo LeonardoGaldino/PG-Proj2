@@ -12,7 +12,7 @@ var scenarioLight;
 var paintObject = (object) => {
 	let triangles = object.triangles2D;
 	for(let i = 0 ; i < triangles.length ; ++i) {
-		drawTriangle(ctx, triangles[i])
+		drawTriangleScanLine(ctx, triangles[i]);
 	}
 }
 
