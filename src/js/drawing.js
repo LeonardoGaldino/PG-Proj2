@@ -11,7 +11,8 @@ var drawPixel = (ctx, x, y, red, green, blue, alpha) => {
 }
 
 //Function that draws every pixel inside a triangle
-var drawTriangle = (ctx, trg) => {
+//Uses Barycentric algorithm to do it (not as efficient as ScanLine)
+var drawTriangleBarycentricAlgorithm = (ctx, trg) => {
 	let xmax = -1;
 	let xmin = canvasWidth+1;
 	let ymax = -1;
@@ -37,7 +38,16 @@ var drawTriangle = (ctx, trg) => {
 	}
 }
 
-var paintFlatBottomTriangle = (ctx, trg) => {
+//Basically draw a horizontal line of pixels
+var drawLine = (ctx, x1, x2, y) => {
+	let startX = Math.min(x1, x2);
+	let endX = Math.max(x1, x2);
+	for(let j = startX ; j <= endX ; ++j)
+		drawPixel(ctx, j, y, 255, 0, 0, 255);
+}
+
+//Draw triangle with two points with equals Y on the bottom of the third point
+var drawFlatBottomTriangle = (ctx, trg) => {
 	let ps = trg.points;
 	let deltaX = (ps[1].coordinates[0] - ps[0].coordinates[0]);
 	let deltaY = (ps[1].coordinates[1] - ps[0].coordinates[1]);
@@ -48,14 +58,15 @@ var paintFlatBottomTriangle = (ctx, trg) => {
 	let curX1 = parseFloat(ps[0].coordinates[0]);
 	let curX2 = parseFloat(ps[0].coordinates[0]);
 	for(let curY = ps[0].coordinates[1] ; curY <= ps[1].coordinates[1] ; ++curY) {
-		for(let j = curX1 ; j <= curX2 ; ++j)
-			drawPixel(ctx, j, curY, 255, 0, 0, 255);
+		//*DrawLine Function is a custom function implemented above*
+		drawLine(ctx, curX1, curX2, curY);
 		curX1 += alpha1;
 		curX2 += alpha2;
 	}
 }
 
-var paintFlatTopTriangle = (ctx, trg) => {
+//Draw triangle with two points with equals Y on the top of the third point
+var drawFlatTopTriangle = (ctx, trg) => {
 	let ps = trg.points;
 	let deltaX = (ps[2].coordinates[0] - ps[0].coordinates[0]);
 	let deltaY = (ps[2].coordinates[1] - ps[0].coordinates[1]);
@@ -66,22 +77,23 @@ var paintFlatTopTriangle = (ctx, trg) => {
 	let curX1 = parseFloat(ps[2].coordinates[0]);
 	let curX2 = parseFloat(ps[2].coordinates[0]);
 	for(let curY = ps[2].coordinates[1] ; curY > ps[0].coordinates[1] ; --curY) {
-		for(let j = curX1 ; j <= curX2 ; ++j)
-			drawPixel(ctx, j, curY, 255, 0, 0, 255);
+		//*DrawLine Function is a custom function implemented above*
+		drawLine(ctx, curX1, curX2, curY);
 		curX1 -= alpha1;
 		curX2 -= alpha2;
 	}
 }
 
+//Draw triangle using ScanLine algorithm (main rasterization algorithm)
 var drawTriangleScanLine = (ctx, trg) => {
-	trg.sortPointsByY();
+	trg.sortPointsByYX();
 	let points = trg.points;
 	//Flat top triangle
 	if(points[0].coordinates[1] == points[1].coordinates[1])
-		paintFlatTopTriangle(ctx, trg);
+		drawFlatTopTriangle(ctx, trg);
 	//Flat bottom triangle
 	else if(points[1].coordinates[1] == points[2].coordinates[1])
-		paintFlatBottomTriangle(ctx, trg);
+		drawFlatBottomTriangle(ctx, trg);
 	//split into 2 triangles
 	else {
 		let deltaY12 = (points[1].coordinates[1] - points[0].coordinates[1]);
@@ -94,7 +106,7 @@ var drawTriangleScanLine = (ctx, trg) => {
 		let midPoint = new Point2D(newX, newY);
 		let flatBottomTriangle = new Triangle2D(points[0], points[1], midPoint);
 		let flatTopTriangle = new Triangle2D(points[1], midPoint, points[2]);
-		paintFlatBottomTriangle(ctx, flatBottomTriangle);
-		paintFlatTopTriangle(ctx, flatTopTriangle);
+		drawFlatBottomTriangle(ctx, flatBottomTriangle);
+		drawFlatTopTriangle(ctx, flatTopTriangle);
 	}
 }

@@ -169,7 +169,7 @@ class Triangle2D {
                         (semiPerimeter-edge2)*(semiPerimeter-edge3));
     }
 
-    sortPointsByY() {
+    sortPointsByYX() {
         //Comparison function to sort Points
         let cmpFunction = (p1, p2) => {
             if(p1.coordinates[1] < p2.coordinates[1])

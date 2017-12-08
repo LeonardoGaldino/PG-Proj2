@@ -9,7 +9,7 @@ var scenarioCamera;
 //Application light source
 var scenarioLight;
 
-var paintObject = (object) => {
+var drawObject = (object) => {
 	let triangles = object.triangles2D;
 	for(let i = 0 ; i < triangles.length ; ++i) {
 		drawTriangleScanLine(ctx, triangles[i]);
@@ -100,7 +100,7 @@ var storeObjectFileContent = (fileContent, fileName) => {
 	//Saves new Object3D
 	scenarioObjects.push(newObject);
 
-	paintObject(newObject);
+	drawObject(newObject);
 }
 
 //Parses camera file content into objects
