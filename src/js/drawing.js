@@ -1,3 +1,10 @@
+var defaultColor = {
+	red: 60,
+	green: 16,
+	blue: 218,
+	alpha: 255
+};
+
 //Function used to paint 1 pixel on the (x,y) coordinate
 //with color rgba(red, green, blue, alpha)
 //red, green, blue, alpha are in range (0,255)
@@ -33,7 +40,8 @@ var drawTriangleBarycentricAlgorithm = (ctx, trg) => {
 			let tempPoint = new Point2D(j,i);
 			let barycentricCoords = getBarycentricCoordinates(trg, tempPoint);
 			if(isInside(barycentricCoords))
-				drawPixel(ctx, j, i, 255, 0, 0, 255);
+				drawPixel(ctx, j, i, defaultColor.red, defaultColor.green, 
+									defaultColor.blue, defaultColor.alpha);
 		}
 	}
 }
@@ -43,7 +51,8 @@ var drawLine = (ctx, x1, x2, y) => {
 	let startX = Math.min(x1, x2);
 	let endX = Math.max(x1, x2);
 	for(let j = startX ; j <= endX ; ++j)
-		drawPixel(ctx, j, y, 255, 0, 0, 255);
+		drawPixel(ctx, j, y, defaultColor.red, defaultColor.green, 
+						defaultColor.blue, defaultColor.alpha);
 }
 
 //Draw triangle with two points with equals Y on the bottom of the third point
