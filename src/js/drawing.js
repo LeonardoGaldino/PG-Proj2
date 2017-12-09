@@ -76,7 +76,7 @@ var drawFlatTopTriangle = (ctx, trg) => {
 	let alpha2 = parseFloat(deltaX/deltaY);
 	let curX1 = parseFloat(ps[2].coordinates[0]);
 	let curX2 = parseFloat(ps[2].coordinates[0]);
-	for(let curY = ps[2].coordinates[1] ; curY > ps[0].coordinates[1] ; --curY) {
+	for(let curY = ps[2].coordinates[1] ; curY >= ps[0].coordinates[1] ; --curY) {
 		//*DrawLine Function is a custom function implemented above*
 		drawLine(ctx, curX1, curX2, curY);
 		curX1 -= alpha1;
