@@ -12,19 +12,13 @@ class Color {
     }
 
     validateColor() {
-        if(this.rgb.red < 0 || this.rgb.red > 255 || this.rgb.green < 0
-                || this.rgb.green > 255 || this.rgb.blue < 0
-                || this.rgb.blue > 255)
-                {
-                    let message = `Color componentes out of range! RGB = (
-                        ${this.rgb.red},${this.rgb.green},${this.rgb.blue})`
-                    throw new BadColorException(message); 
-                }
-        if(isNaN(this.rgb.red))
-            throw new BadColorException('RGB invalid red component!');
-        if(isNaN(this.rgb.green))
-            throw new BadColorException('RGB invalid green component!');
-        if(isNaN(this.rgb.blue))
-            throw new BadColorException('RGB invalid blue component!');
+        if(isNaN(this.rgb.red)) throw new BadColorException('RGB invalid red component!');
+        if(isNaN(this.rgb.green)) throw new BadColorException('RGB invalid green component!');
+        if(isNaN(this.rgb.blue)) throw new BadColorException('RGB invalid blue component!');
+        
+        this.rgb.red = Math.max(Math.min(this.rgb.red, 255), 0);
+        this.rgb.green = Math.max(Math.min(this.rgb.green, 255), 0);
+        this.rgb.blue = Math.max(Math.min(this.rgb.blue, 255), 0);
     }
+
 }
