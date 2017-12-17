@@ -1,7 +1,7 @@
-let canvas = document.getElementById('main-canvas');
-let ctx = canvas.getContext('2d');
-let canvasWidth = canvas.width;
-let canvasHeight = canvas.height;
+var canvas = document.getElementById('main-canvas');
+var ctx = canvas.getContext('2d');
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
 //Array of Object3D objects to be rendered
 var scenarioObjects;
 //Application Camera
