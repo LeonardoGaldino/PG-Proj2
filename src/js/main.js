@@ -9,7 +9,7 @@ var scenarioCamera;
 //Application light source
 var scenarioLight;
 
-var drawObject = (object) => {
+function drawObject(object) {
 	let triangles = object.triangles2D;
 	for(let i = 0 ; i < triangles.length ; ++i) {
 		drawTriangleScanLine(ctx, triangles[i]);
@@ -17,7 +17,7 @@ var drawObject = (object) => {
 }
 
 //Parses object file content into objects
-var storeObjectFileContent = (fileContent, fileName) => {
+function storeObjectFileContent(fileContent, fileName) {
 	let objectName = getObjectName(fileName);
 	let newObject = new Object3D(objectName);
 	let lines = fileContent.split('\n');
@@ -104,7 +104,7 @@ var storeObjectFileContent = (fileContent, fileName) => {
 }
 
 //Parses camera file content into objects
-var storeCameraFileContent = (fileContent, fileName) => {
+function storeCameraFileContent(fileContent, fileName) {
 	let lines = fileContent.split('\n');
 	let inputs = [];
 	for(let idx = 0 ; idx < 4 ; ++idx) {
@@ -130,7 +130,7 @@ var storeCameraFileContent = (fileContent, fileName) => {
 }
 
 //Parses light file content into scenarioLight
-var storeLightFileContent = (fileContent, fileName) => {
+function storeLightFileContent(fileContent, fileName) {
 	let lines = fileContent.split('\n');
 	let inputs = [];
 	for(let idx = 0 ; idx < 8 ; ++idx) {
@@ -162,7 +162,7 @@ var storeLightFileContent = (fileContent, fileName) => {
 }
 
 //Generic function to load files
-var loadFiles = (fieldId, callbackFunction) => {
+function loadFiles(fieldId, callbackFunction) {
 	let inputNode = document.getElementById(fieldId);
 	let inputFiles = inputNode.files;
 
@@ -187,7 +187,7 @@ var loadFiles = (fieldId, callbackFunction) => {
 
 //Validates if user selected one or more object files
 //Validates if user selected exactly one camera file
-var validateFilesInputs = () => {
+function validateFilesInputs() {
 	let fileInputNode = document.getElementById('file-input-field'); //File DOM node
 	let cameraInputNode = document.getElementById('camera-input-field'); //Camera DOM node
 	let lightInputNode = document.getElementById('light-input-field'); //Illumination DOM node
@@ -202,7 +202,7 @@ function eraseCanvas() {
 }
 
 //Load all the selected files and parses it into objects
-var runApp = () => {
+function runApp() {
 	//Validates if files are correctly submitted
 	if(!validateFilesInputs()) {
 		Materialize.toast('Selecione uma câmera, uma iluminação e um ou mais objetos!', 4000);
