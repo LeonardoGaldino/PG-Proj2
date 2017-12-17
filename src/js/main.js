@@ -25,7 +25,23 @@ function storeObjectFileContent(fileContent, fileName) {
 	let numPoints = parseInt(limits[0]);
 	let numTriangles = parseInt(limits[1]);
 	let idx;
-	//Creates Points
+
+	createPoints(numPoints, lines, fileName, newObject);
+	createTriangles(numTriangles, lines, fileName, newObject);
+
+	//Normalize Points normal Vector
+	for(let idx = 0 ; idx < newObject.points3D.length ; ++idx) {
+		let point = newObject.points3D[idx];
+		point.normalVector = point.normalVector.getNormalizedVector();
+	}
+
+	//Saves new Object3D
+	scenarioObjects.push(newObject);
+
+	drawObject(newObject);
+}
+
+function createPoints(numPoints, lines, fileName, newObject){
 	for(idx = 1 ; idx <= numPoints ; ++idx) {
 		let coords = lines[idx].split(' ');
 		let x = parseFloat(coords[0]);
@@ -38,10 +54,7 @@ function storeObjectFileContent(fileContent, fileName) {
 		}
 		let newPoint = new Point(x,y,z);
 		//Changes newPoint to camera's point origin
-		let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
-											-scenarioCamera.focus.coordinates[1],
-											-scenarioCamera.focus.coordinates[2]);
-		newPoint = PointOperations.addVector(newPoint, originChangeVector);
+		newPoint = toCameraPointOrigin(newPoint);
 
 		//Changes base of newPoint to camera's base system
 		newPoint = newPoint.baseChange(scenarioCamera.transformMatrix);
@@ -58,8 +71,16 @@ function storeObjectFileContent(fileContent, fileName) {
 		newObject.points2D.push(newPoint2D);
 		//drawPixel(ctx, px, py, 255, 0, 0, 255);
 	}
+}
 
-	//Creates triangles
+function toCameraPointOrigin (point) {
+	let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
+		-scenarioCamera.focus.coordinates[1],
+		-scenarioCamera.focus.coordinates[2]);
+	return PointOperations.addVector(point, originChangeVector);
+}
+
+function createTriangles(numTriangles, lines, fileName, newObject){
 	for(; idx < lines.length ; ++idx) {
 		let points = lines[idx].split(' ');
 		if(points.length < 3) { // Avoid blank lines that separates the input
@@ -90,17 +111,6 @@ function storeObjectFileContent(fileContent, fileName) {
 					newObject.points2D[p2-1], newObject.points2D[p3-1]);
 		newObject.triangles2D.push(newTriangle2D);
 	}
-
-	//Normalize Points normal Vector
-	for(let idx = 0 ; idx < newObject.points3D.length ; ++idx) {
-		let point = newObject.points3D[idx];
-		point.normalVector = point.normalVector.getNormalizedVector();
-	}
-
-	//Saves new Object3D
-	scenarioObjects.push(newObject);
-
-	drawObject(newObject);
 }
 
 //Parses camera file content into objects
@@ -141,10 +151,7 @@ function storeLightFileContent(fileContent, fileName) {
 	let focus = new Point(parseFloat(inputs[0][0]),
 						parseFloat(inputs[0][1]), parseFloat(inputs[0][2]));
 	//Changes focus to camera's point origin
-	let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
-											-scenarioCamera.focus.coordinates[1],
-											-scenarioCamera.focus.coordinates[2]);
-	focus = PointOperations.addVector(focus, originChangeVector);
+	focus = toCameraPointOrigin(focus);
 	//Changes base of focus to camera's base system
 	focus = focus.baseChange(scenarioCamera.transformMatrix);
 	let ambRefl = parseFloat(inputs[1][0]);
