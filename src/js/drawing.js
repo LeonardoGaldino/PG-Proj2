@@ -13,9 +13,9 @@ function initializeZBuffer(){
 	for(var i = 0; i < canvasHeight; ++i) {
 		zbuffer.push([]);
 		for(var j = 0; j < canvasWidth; ++j) {
-			zbuffer[i].push(new ZBufferData(Infinity, defaultColor));
+			zbuffer[i].push(new ZBufferData(Number.MAX_VALUE, defaultColor));
 		}
-	}
+	}	
 }
 
 //Function used to paint 1 pixel on the (x,y) coordinate
