@@ -206,6 +206,7 @@ function validateFilesInputs() {
 
 function eraseCanvas() {
 	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	initializeZBuffer();
 }
 
 //Load all the selected files and parses it into objects
