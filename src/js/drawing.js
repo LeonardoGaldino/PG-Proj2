@@ -47,7 +47,7 @@ function drawTriangleBarycentricAlgorithm (ctx, trg) {
 }
 
 //Basically draw a horizontal line of pixels
-function drawLine = (ctx, x1, x2, y) {
+function drawLine(ctx, x1, x2, y) {
 	let startX = Math.min(x1, x2);
 	let endX = Math.max(x1, x2);
 	for(let j = startX ; j <= endX ; ++j)
