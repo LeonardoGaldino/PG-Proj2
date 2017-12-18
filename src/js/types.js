@@ -309,6 +309,16 @@ class VectorOperations {
                             coordsV1[0]*coordsV2[1] - coordsV1[1]*coordsV2[0]);
     }
 
+    /*Component to component product
+        -Receives two Vectors as input
+        -Returns a third Vector as output
+    */
+    static componentProduct(vector1, vector2) {
+        let coordsV1 = vector1.coordinates;
+        let coordsV2 = vector2.coordinates;
+        return new Vector(coordsV1[0]*coordsV2[0], coordsv1[1]*coordsV2[1], coordsv1[2]*coordsV2[2]);
+    }
+
 }
 
 /* Class designed to represent Object that will be drawn

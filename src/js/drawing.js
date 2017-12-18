@@ -119,3 +119,41 @@ function drawTriangleScanLine (ctx, trg) {
 		drawFlatTopTriangle(ctx, flatTopTriangle);
 	}
 }
+
+function phong (point) { //usa scenarioCamera e scenarioLight do main, recebe so o pixel sendo analisado
+	    /*
+	    Calcular e normalizar vetores:
+	    L, vetor formado pelo ponto aproximado P e o ponto da fonte de luz
+	    V, vetor formado pelo ponto aproximado P e pelo foco da câmera C
+	    N, normal aproximada do ponto P, pode ser calculado aplicando as coordenadas baricentricas de P às normais dos vértices 
+		R, vetor de reflexão 
+		*/
+	    let P = new Vector(-point.coordinates[0], -point.coordinates[1], -point.coordinates[2]);
+	    let L = PointOperations.addVector(scenarioLight.focus, P).getNormalizedVector();
+	    let V = PointOperations.addVector(scenarioCamera.focus, P).getNormalizedVector();
+		let N = ;
+		let R = VectorOperations.addVector(2*(VectorOperations.scalarMultiplication(N, VectorOperations.scalarProduct(N, L))), VectorOperations.scalarMultiplication(L, -1));
+		let Ip;
+		/*
+		Checar os seguintes produtos internos
+		Se V. N < 0 : a normal está invertida, fazer N = -N
+		Se N. L < 0 : não existe reflexão difusa nem especular 
+		Se R. V < 0 : não existe reflexão especular. 
+		*/
+		//formula: KaIa + Kd(LN)Od*Il + Ks(RV)^n Il
+		if(VectorOperations.scalarProduct(V, N) < 0) { N = VectorOperations.scalarMultiplication(N, -1)};
+		if(VectorOperations.scalarProduct(N, L) < 0) {
+			Ip = VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
+		} 
+		if(VectorOperations.scalarProduct(R, V) < 0) {
+			Ip = VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl) +
+			VectorOperations.componentProduct(VectorOperations.scalarMultiplication(scenarioLight.difVector, VectorOperations.scalarProduct(L, N)*scenarioLight.difConstant), scenarioLight.sourceColor);
+		} else {
+			Ip = VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl) +
+				VectorOperations.componentProduct(VectorOperations.scalarMultiplication(scenarioLight.difVector, VectorOperations.scalarProduct(L, N)*scenarioLight.difConstant), scenarioLight.sourceColor) +
+				VectorOperations.scalarMultiplication(scenarioLight.sourceColor, spec*(Math.pow(VectorOperations.scalarProduct(R, V), scenarioLight.rugosity)));
+		}
+	
+	
+	}
+	
