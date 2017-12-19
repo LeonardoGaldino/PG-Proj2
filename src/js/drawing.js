@@ -1,9 +1,27 @@
+/**
+ * @requires ./types/*
+ * @requires ./exceptions.js
+ * @requires ./utils.js
+ */
 var defaultColor = {
 	red: 60,
 	green: 16,
 	blue: 218,
 	alpha: 255
 };
+
+var zbuffer = [];
+
+//Function used to initialize the Z-Buffer array
+// with max distance and the equivalent color
+function initializeZBuffer(){
+	for(var i = 0; i < canvasHeight; ++i) {
+		zbuffer.push([]);
+		for(var j = 0; j < canvasWidth; ++j) {
+			zbuffer[i].push(new ZBufferData(Number.MAX_VALUE, defaultColor));
+		}
+	}	
+}
 
 //Function used to paint 1 pixel on the (x,y) coordinate
 //with color rgba(red, green, blue, alpha)
@@ -47,7 +65,7 @@ function drawTriangleBarycentricAlgorithm (ctx, trg) {
 }
 
 //Basically draw a horizontal line of pixels
-function drawLine(ctx, x1, x2, y) {
+function drawLine (ctx, x1, x2, y) {
 	let startX = Math.min(x1, x2);
 	let endX = Math.max(x1, x2);
 	for(let j = startX ; j <= endX ; ++j)
