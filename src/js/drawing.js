@@ -1,3 +1,8 @@
+/**
+ * @requires ./types/*
+ * @requires ./exceptions.js
+ * @requires ./utils.js
+ */
 var defaultColor = {
 	red: 60,
 	green: 16,
