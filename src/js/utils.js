@@ -1,3 +1,6 @@
+/**
+ * @requires ./types/*
+ */
 //Capitalizes first letter of a string
 function capitalize(inputString) {
     return inputString[0].toUpperCase() + inputString.slice(1);

@@ -1,3 +1,9 @@
+/**
+ * @requires ./types/*
+ * @requires ./drawing.js
+ * @requires ./exceptions.js
+ * @requires ./utils.js
+ */
 var canvas = document.getElementById('main-canvas');
 var ctx = canvas.getContext('2d');
 var canvasWidth = canvas.width;
