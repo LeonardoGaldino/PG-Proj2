@@ -56,7 +56,7 @@ function drawTriangleBarycentricAlgorithm (ctx, trg) {
 	for(let i = ymin ; i <= ymax ; ++i) {
 		for(let j = xmin ; j <= xmax ; ++j) {
 			let tempPoint = new Point2D(j,i);
-			let barycentricCoords = getBarycentricCoordinates(trg, tempPoint);
+			let barycentricCoords = getBarycentricCoefficients(trg, tempPoint);
 			if(isInside(barycentricCoords))
 				drawPixel(ctx, j, i, defaultColor.red, defaultColor.green, 
 									defaultColor.blue, defaultColor.alpha);
@@ -138,7 +138,7 @@ function drawTriangleScanLine (ctx, trg) {
 	}
 }
 
-function phong (point) { //usa scenarioCamera e scenarioLight do main, recebe so o pixel sendo analisado
+function phong (trg, point, obj) { //usa scenarioCamera e scenarioLight do main, recebe so o pixel sendo analisado
 	    /*
 	    Calcular e normalizar vetores:
 	    L, vetor formado pelo ponto aproximado P e o ponto da fonte de luz
@@ -149,7 +149,7 @@ function phong (point) { //usa scenarioCamera e scenarioLight do main, recebe so
 	    let P = new Vector(-point.coordinates[0], -point.coordinates[1], -point.coordinates[2]);
 	    let L = PointOperations.addVector(scenarioLight.focus, P).getNormalizedVector();
 	    let V = PointOperations.addVector(scenarioCamera.focus, P).getNormalizedVector();
-		let N = ;
+		let N = getNVector(trg, point, obj);
 		let R = VectorOperations.addVector(2*(VectorOperations.scalarMultiplication(N, VectorOperations.scalarProduct(N, L))), VectorOperations.scalarMultiplication(L, -1));
 		let Ip;
 		/*

@@ -40,7 +40,7 @@ var isInside = (barycentricCoordinates) => {
 //Gets barycentric coordinates of a point
 //Uses area method to calculate barycentric coordinates
 //Uses Heron's formula to calculate triangle's area.
-var getBarycentricCoordinates = (trg, point) => {
+var getBarycentricCoefficients = (trg, point) => {
 	let origArea = trg.getArea();
 	let t1 = new Triangle2D(trg.points[0], trg.points[1], point);
 	let t2 = new Triangle2D(trg.points[0], trg.points[2], point);
@@ -49,4 +49,24 @@ var getBarycentricCoordinates = (trg, point) => {
 	let beta = (t2.getArea()/origArea);
 	let gama = (t1.getArea()/origArea);
 	return [alpha, beta, gama];
+}
+
+function getBarycentricCoordinates (trg, point, obj){
+	let coefs = getBarycentricCoefficients(trg, point);
+	let p1_3D = obj.points3D[trg.points[0].id];
+	let p2_3D = obj.points3D[trg.points[1].id];
+	let p3_3D = obj.points3D[trg.points[2].id];
+	let endPoint = PointOperations.barycentricSum([p1_3D,p2_3D,p3_3D], coefs);
+}
+// calculates N = alpha*n1 + beta*n2 + gama*n3
+function getNVector(trg, point, obj){
+	let coefs = getBarycentricCoefficients(trg, point);
+	let barcoord = getBarycentricCoordinates (trg, point, obj);
+	let normal = [];
+	for(let i = 0; i < 3; ++i){
+		var temp = obj.points3D[trg.points[i].id].normalVector; 
+		normal.push(VectorOperations.scalarMultiplication(temp, coefs[i]));
+	}
+	let n = VectorOperations.add(VectorOperations.add(n[0], n[1]), n[2]);
+	n = n.getNormalizedVector();
 }
