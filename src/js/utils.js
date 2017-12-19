@@ -68,5 +68,5 @@ function getNVector(trg, point, obj){
 		normal.push(VectorOperations.scalarMultiplication(temp, coefs[i]));
 	}
 	let n = VectorOperations.add(VectorOperations.add(n[0], n[1]), n[2]);
-	n = n.getNormalizedVector();
+	return n = n.getNormalizedVector();
 }
