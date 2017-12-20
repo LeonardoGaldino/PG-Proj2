@@ -10,12 +10,7 @@ var defaultColor = {
 	alpha: 255
 };
 
-var canvasColor = {
-	red: 213,
-	green: 213,
-	blue: 213,
-	alpha: 255
-};
+var canvasColor = new Vector(213, 213, 213);
 
 var zBuffer;
 
@@ -86,9 +81,7 @@ function drawLine (ctx, x1, x2, y, trg, obj) {
 			if(p3D.coordinates[2] < zBuffer[j][y].distance) {
 				zBuffer[j][y].distance = p3D.coordinates[2];
 				let computedColor = getPhongColor(curPixel, p3D, trg, obj);
-				//Uncomment when getPhongColor is complete
-				//zBuffer[j][y].color = color;
-				zBuffer[j][y].color = defaultColor;
+				zBuffer[j][y].color = computedColor;
 			}
 		}
 	}
@@ -163,7 +156,11 @@ function drawZBuffer(ctx) {
 	for(var i = 0; i < canvasWidth; ++i) {
 		for(var j = 0; j < canvasHeight; ++j) {
 			let cur = zBuffer[i][j].color;
-			drawPixel(ctx, i, j, cur.red, cur.green, cur.blue, cur.alpha);
+			for(let k = 0 ; k < 3 ; ++k) {
+				cur.coordinates[k] = Math.max(Math.min(cur.coordinates[k], 255), 0);
+			}
+			drawPixel(ctx, i, j, cur.coordinates[0], cur.coordinates[1],
+					cur.coordinates[2], 255);
 		}
 	}	
 }

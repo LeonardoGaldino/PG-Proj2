@@ -123,5 +123,12 @@ class VectorOperations {
                             coordsV1[2]*coordsV2[0] - coordsV1[0]*coordsV2[2],
                             coordsV1[0]*coordsV2[1] - coordsV1[1]*coordsV2[0]);
     }
+    
+    static componentProduct(vector1, vector2) {
+        let newCoords = vector1.coordinates.map( (coord, idx) => {
+            return (coord*vector2.coordinates[idx]);
+        });
+        return new Vector(newCoords[0], newCoords[1], newCoords[2]);
+    }
 
 }

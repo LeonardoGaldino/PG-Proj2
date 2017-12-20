@@ -111,19 +111,30 @@ function computePhongVectorN(curPixel, trg, obj) {
 }
 
 function getPhongColor(curPixel, p3D, trg, obj) {
-	let vectorN = computePhongVectorN(curPixel, trg, obj)
-	vectorN = vectorN.getNormalizedVector();
-	let vectorV = PointOperations.subtract(new Point(0,0,0), p3D);
-	vectorV = vectorV.getNormalizedVector();
-	let vectorL = PointOperations.subtract(scenarioLight.focus, p3D);
-	vectorL = vectorL.getNormalizedVector();
-	let _VxN = VectorOperations.scalarProduct(vectorN, vectorV);
+	let N = computePhongVectorN(curPixel, trg, obj)
+	N = N.getNormalizedVector();
+	let V = PointOperations.subtract(new Point(0,0,0), p3D);
+	V = V.getNormalizedVector();
+	let L = PointOperations.subtract(scenarioLight.focus, p3D);
+	L = L.getNormalizedVector();
+	let _VxN = VectorOperations.scalarProduct(N, V);
 	if(_VxN < 0) {
 		//reverse normal
-		vectorN.multiply(-1);
+		N.multiply(-1);
 	}
-	let _NxL = VectorOperations.scalarProduct(vectorN, vectorL);
-	let vectorR = VectorOperations.scalarMultiplication(vectorN, 2*_NxL);
-	vectorR = VectorOperations.subtract(vectorR, vectorL);
-	vectorR = vectorR.getNormalizedVector();
+	let _NxL = VectorOperations.scalarProduct(N, L);
+	let R = VectorOperations.scalarMultiplication(N, 2*_NxL);
+	R = VectorOperations.subtract(R, L);
+	R = R.getNormalizedVector();
+	if(VectorOperations.scalarProduct(N, L) < 0) {
+		return VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
+	} 
+	if(VectorOperations.scalarProduct(R, V) < 0) {
+		return VectorOperations.add(VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl),
+		VectorOperations.componentProduct(VectorOperations.scalarMultiplication(scenarioLight.difVector, VectorOperations.scalarProduct(L, N)*scenarioLight.difConstant), scenarioLight.sourceColor));
+	} else {
+		return VectorOperations.add(VectorOperations.add(VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl),
+			VectorOperations.componentProduct(VectorOperations.scalarMultiplication(scenarioLight.difVector, VectorOperations.scalarProduct(L, N)*scenarioLight.difConstant), scenarioLight.sourceColor)),
+			VectorOperations.scalarMultiplication(scenarioLight.sourceColor, scenarioLight.spec*(Math.pow(VectorOperations.scalarProduct(R, V), scenarioLight.rugosity))));
+	}
 }
