@@ -20,6 +20,8 @@ function drawObject(object) {
 	for(let i = 0 ; i < triangles.length ; ++i) {
 		drawTriangleScanLine(ctx, triangles[i], object);
 	}
+
+	drawZBuffer(ctx);
 }
 
 //Parses object file content into objects

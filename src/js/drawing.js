@@ -17,15 +17,16 @@ var canvasColor = {
 	alpha: 255
 };
 
-var zbuffer = [];
+var zBuffer;
 
 //Function used to initialize the Z-Buffer array
 // with max distance and the equivalent color
 function initializeZBuffer(){
-	for(var i = 0; i < canvasHeight; ++i) {
-		zbuffer.push([]);
-		for(var j = 0; j < canvasWidth; ++j) {
-			zbuffer[i].push(new ZBufferData(Number.MAX_VALUE, canvasColor));
+	zBuffer = [];
+	for(var i = 0; i < canvasWidth ; ++i) {
+		zBuffer.push([]);
+		for(var j = 0; j < canvasHeight ; ++j) {
+			zBuffer[i].push(new ZBufferData(Number.MAX_VALUE, canvasColor));
 		}
 	}	
 }
@@ -79,11 +80,15 @@ function drawLine (ctx, x1, x2, y, trg, obj) {
 	let endX = Math.max(x1, x2);
 	for(let j = startX ; j <= endX ; ++j){
 		let curPixel = new Point2D(j, y);
-		//drawPixel(ctx, j, y, defaultColor.red, defaultColor.green, 
-		//	defaultColor.blue, defaultColor.alpha);
 		let curZ = getZCoordinate(trg, curPixel, obj);
-		zbuffer[j][y].distance = Math.min(zbuffer[j][y].distance, curZ);
-
+		if(j < canvasWidth && j >= 0 && y >= 0
+			&& y < zBuffer[j].length) {
+			if(curZ < zBuffer[j][y].distance) {
+				zBuffer[j][y].distance = curZ;
+				zBuffer[j][y].color = defaultColor;
+				//Make all illumination calculations here
+			}
+		}
 	}
 }
 
@@ -152,10 +157,11 @@ function drawTriangleScanLine (ctx, trg, obj) {
 	}
 }
 
-function go() {
-	for(var i = 0; i < canvasHeight; ++i) {
-		for(var j = 0; j < canvasWidth; ++j) {
-			console.log(zbuffer[i][j]);
+function drawZBuffer(ctx) {
+	for(var i = 0; i < canvasWidth; ++i) {
+		for(var j = 0; j < canvasHeight; ++j) {
+			let cur = zBuffer[i][j].color;
+			drawPixel(ctx, i, j, cur.red, cur.green, cur.blue, cur.alpha);
 		}
 	}	
 }
