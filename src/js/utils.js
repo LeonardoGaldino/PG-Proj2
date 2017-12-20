@@ -39,14 +39,59 @@ var isInside = (barycentricCoordinates) => {
 
 //Gets barycentric coordinates of a point
 //Uses area method to calculate barycentric coordinates
-//Uses Heron's formula to calculate triangle's area.
 var getBarycentricCoordinates = (trg, point) => {
 	let origArea = trg.getArea();
-	let t1 = new Triangle2D(trg.points[0], trg.points[1], point);
+	//Degenerated triangle
+	if(origArea == 0) {
+		//Degenerated to ONE POINT
+		if(PointOperations.areSamePoint(trg.points[0], trg.points[1]) && 
+		PointOperations.areSamePoint(trg.points[1], trg.points[2])) {
+			return [1,0,0];
+		}
+		//Below the triangle was degenerated to a segment
+		if(!PointOperations.areSamePoint(trg.points[0], trg.points[1])) {
+			if(trg.points[0].coordinates[0] != trg.points[1].coordinates[0]) {
+				let temp = point.coordinates[0] - trg.points[1].coordinates[0];
+				let temp2 = trg.points[0].coordinates[0] - trg.points[1].coordinates[0];
+				let alpha = temp/temp2;
+				let beta = (1-alpha);
+				return [alpha, beta, 0];
+			}
+			let temp = point.coordinates[1] - trg.points[1].coordinates[1];
+			let temp2 = trg.points[0].coordinates[1] - trg.points[1].coordinates[1];
+			let alpha = temp/temp2;
+			let beta = (1-alpha);
+			return [alpha, beta, 0];
+		}
+		else if(!PointOperations.areSamePoint(trg.points[1], trg.points[2])) {
+			if(trg.points[1].coordinates[0] != trg.points[2].coordinates[0]) {
+				let temp = point.coordinates[0] - trg.points[2].coordinates[0];
+				let temp2 = trg.points[1].coordinates[0] - trg.points[2].coordinates[0];
+				let beta = temp/temp2;
+				let gama = (1-beta);
+				return [0, beta, gama];
+			}
+			let temp = point.coordinates[1] - trg.points[2].coordinates[1];
+			let temp2 = trg.points[1].coordinates[1] - trg.points[2].coordinates[1];
+			let alpha = temp/temp2;
+			let beta = (1-alpha);
+			return [alpha, beta, 0];
+		}
+	}
 	let t2 = new Triangle2D(trg.points[0], trg.points[2], point);
 	let t3 = new Triangle2D(trg.points[1], trg.points[2], point);
 	let alpha = (t3.getArea()/origArea);
 	let beta = (t2.getArea()/origArea);
-	let gama = (t1.getArea()/origArea);
+	let gama = (1 - alpha - beta);
 	return [alpha, beta, gama];
+}
+
+function getZCoordinate(trg, point, obj) {
+	let coefs = getBarycentricCoordinates(trg, point);
+	let p1_3D = obj.points3D[trg.points[0].id];
+	let p2_3D = obj.points3D[trg.points[1].id];
+	let p3_3D = obj.points3D[trg.points[2].id];
+
+	let endPoint = PointOperations.barycentricSum([p1_3D, p2_3D, p3_3D], coefs, true);
+	return endPoint.coordinates[2];
 }

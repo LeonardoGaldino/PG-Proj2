@@ -10,6 +10,13 @@ var defaultColor = {
 	alpha: 255
 };
 
+var canvasColor = {
+	red: 213,
+	green: 213,
+	blue: 213,
+	alpha: 255
+};
+
 var zbuffer = [];
 
 //Function used to initialize the Z-Buffer array
@@ -18,7 +25,7 @@ function initializeZBuffer(){
 	for(var i = 0; i < canvasHeight; ++i) {
 		zbuffer.push([]);
 		for(var j = 0; j < canvasWidth; ++j) {
-			zbuffer[i].push(new ZBufferData(Number.MAX_VALUE, defaultColor));
+			zbuffer[i].push(new ZBufferData(Number.MAX_VALUE, canvasColor));
 		}
 	}	
 }
@@ -65,16 +72,23 @@ function drawTriangleBarycentricAlgorithm (ctx, trg) {
 }
 
 //Basically draw a horizontal line of pixels
-function drawLine (ctx, x1, x2, y) {
+function drawLine (ctx, x1, x2, y, trg, obj) {
+	x1 = parseInt(x1);
+	x2 = parseInt(x2);
 	let startX = Math.min(x1, x2);
 	let endX = Math.max(x1, x2);
-	for(let j = startX ; j <= endX ; ++j)
-		drawPixel(ctx, j, y, defaultColor.red, defaultColor.green, 
-						defaultColor.blue, defaultColor.alpha);
+	for(let j = startX ; j <= endX ; ++j){
+		let curPixel = new Point2D(j, y);
+		//drawPixel(ctx, j, y, defaultColor.red, defaultColor.green, 
+		//	defaultColor.blue, defaultColor.alpha);
+		let curZ = getZCoordinate(trg, curPixel, obj);
+		zbuffer[j][y].distance = Math.min(zbuffer[j][y].distance, curZ);
+
+	}
 }
 
 //Draw triangle with two points with equals Y on the bottom of the third point
-function drawFlatBottomTriangle (ctx, trg) {
+function drawFlatBottomTriangle (ctx, trg, origTrg, obj) {
 	let ps = trg.points;
 	let deltaX = (ps[1].coordinates[0] - ps[0].coordinates[0]);
 	let deltaY = (ps[1].coordinates[1] - ps[0].coordinates[1]);
@@ -86,14 +100,14 @@ function drawFlatBottomTriangle (ctx, trg) {
 	let curX2 = parseFloat(ps[0].coordinates[0]);
 	for(let curY = ps[0].coordinates[1] ; curY <= ps[1].coordinates[1] ; ++curY) {
 		//*DrawLine Function is a custom function implemented above*
-		drawLine(ctx, curX1, curX2, curY);
+		drawLine(ctx, curX1, curX2, curY, origTrg, obj);
 		curX1 += alpha1;
 		curX2 += alpha2;
 	}
 }
 
 //Draw triangle with two points with equals Y on the top of the third point
-function drawFlatTopTriangle (ctx, trg) {
+function drawFlatTopTriangle (ctx, trg, origTrg, obj) {
 	let ps = trg.points;
 	let deltaX = (ps[2].coordinates[0] - ps[0].coordinates[0]);
 	let deltaY = (ps[2].coordinates[1] - ps[0].coordinates[1]);
@@ -105,22 +119,22 @@ function drawFlatTopTriangle (ctx, trg) {
 	let curX2 = parseFloat(ps[2].coordinates[0]);
 	for(let curY = ps[2].coordinates[1] ; curY >= ps[0].coordinates[1] ; --curY) {
 		//*DrawLine Function is a custom function implemented above*
-		drawLine(ctx, curX1, curX2, curY);
+		drawLine(ctx, curX1, curX2, curY, origTrg, obj);
 		curX1 -= alpha1;
 		curX2 -= alpha2;
 	}
 }
 
 //Draw triangle using ScanLine algorithm (main rasterization algorithm)
-function drawTriangleScanLine (ctx, trg) {
+function drawTriangleScanLine (ctx, trg, obj) {
 	trg.sortPointsByYX();
 	let points = trg.points;
 	//Flat top triangle
 	if(points[0].coordinates[1] == points[1].coordinates[1])
-		drawFlatTopTriangle(ctx, trg);
+		drawFlatTopTriangle(ctx, trg, trg, obj);
 	//Flat bottom triangle
 	else if(points[1].coordinates[1] == points[2].coordinates[1])
-		drawFlatBottomTriangle(ctx, trg);
+		drawFlatBottomTriangle(ctx, trg, trg, obj);
 	//split into 2 triangles
 	else {
 		let deltaY12 = (points[1].coordinates[1] - points[0].coordinates[1]);
@@ -133,7 +147,15 @@ function drawTriangleScanLine (ctx, trg) {
 		let midPoint = new Point2D(newX, newY);
 		let flatBottomTriangle = new Triangle2D(points[0], points[1], midPoint);
 		let flatTopTriangle = new Triangle2D(points[1], midPoint, points[2]);
-		drawFlatBottomTriangle(ctx, flatBottomTriangle);
-		drawFlatTopTriangle(ctx, flatTopTriangle);
+		drawFlatBottomTriangle(ctx, flatBottomTriangle, trg, obj);
+		drawFlatTopTriangle(ctx, flatTopTriangle, trg, obj);
 	}
+}
+
+function go() {
+	for(var i = 0; i < canvasHeight; ++i) {
+		for(var j = 0; j < canvasWidth; ++j) {
+			console.log(zbuffer[i][j]);
+		}
+	}	
 }

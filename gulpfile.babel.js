@@ -59,7 +59,6 @@ gulp.task('dependeciesStyles', () => { //Take dependencies styles and put in a t
 
 gulp.task('devScripts', () => { //Take scripts, transpile, minify, and put in a temp file
   return gulp.src(devJsGlobs)
-    
     .pipe(resolve({
       pattern: /\* @requires [\s-]*(.*\.js)/g
     }))

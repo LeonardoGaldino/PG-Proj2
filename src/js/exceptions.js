@@ -39,3 +39,14 @@ function BadColorException(message) {
 	this.message = message;
 	this.name = 'BadColorException';	
 }
+
+function BadBarycentricSum(message) {
+	alert('Erro! Abra o console para saber mais.');
+	this.message = message;
+	this.name = 'BadBarycentricSum';	
+}
+
+function DegeneratedTriangle(message) {
+	this.message = message;
+	this.name = 'DegeneratedTriangle';
+}

@@ -18,7 +18,7 @@ var scenarioLight;
 function drawObject(object) {
 	let triangles = object.triangles2D;
 	for(let i = 0 ; i < triangles.length ; ++i) {
-		drawTriangleScanLine(ctx, triangles[i]);
+		drawTriangleScanLine(ctx, triangles[i], object);
 	}
 }
 
@@ -74,8 +74,8 @@ function createPoints(numPoints, lines, fileName, newObject){
 		px = Math.floor((px+1)*(canvasWidth/2));
 		py = Math.floor((1-py)*(canvasHeight/2));
 		let newPoint2D = new Point2D(px, py);
+		newPoint2D.id = (idx-1);
 		newObject.points2D.push(newPoint2D);
-		//drawPixel(ctx, px, py, 255, 0, 0, 255);
 	}
 }
 

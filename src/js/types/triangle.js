@@ -41,13 +41,26 @@ class Triangle2D {
     }
 
     //Returns Area of the triangle using Heron's formula.
-    getArea() {
+    getArea2() {
         let edge1 = getDistance(this.points[0], this.points[1]);
         let edge2 = getDistance(this.points[0], this.points[2]);
         let edge3 = getDistance(this.points[1], this.points[2]);
         let semiPerimeter = (edge1+edge2+edge3)/2;
         return Math.sqrt(semiPerimeter*(semiPerimeter-edge1)*
                         (semiPerimeter-edge2)*(semiPerimeter-edge3));
+    }
+
+    //Returns Area of the triangle using vectorial product.
+    getArea() {
+        let p1 = new Point(this.points[0].coordinates[0], this.points[0].coordinates[1], 0);
+        let p2 = new Point(this.points[1].coordinates[0], this.points[1].coordinates[1], 0);
+        let p3 = new Point(this.points[2].coordinates[0], this.points[2].coordinates[1], 0);
+        let v1 = PointOperations.subtract(p3, p1);
+        let v2 = PointOperations.subtract(p2, p1);
+        let area = VectorOperations.vectorialProduct(v1,v2).getNorm();
+        //console.log(area, this.points[0].id, this.points[1].id, this.points[2].id);
+        //console.log(p1.coordinates, p2.coordinates, p3.coordinates);
+        return area;
     }
 
     sortPointsByYX() {
