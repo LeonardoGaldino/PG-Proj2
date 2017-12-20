@@ -68,13 +68,9 @@ class PointOperations {
 
     static barycentricSum(points, coefs, is3D) {
 
-        //console.log(coefs);
-
         let coefsSum = coefs.reduce( (prev, cur) => {
             return (prev+cur);
         }, 0);
-
-        //console.log(coefsSum);
 
         //if(Math.abs(1-coefsSum) > 1e-15) {
         //    let message = 'Barycentric coordinates didn\'t sum up to 1';

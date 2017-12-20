@@ -63,7 +63,6 @@ function createPoints(numPoints, lines, fileName, newObject){
 		let newPoint = new Point(x,y,z);
 		//Changes newPoint to camera's point origin
 		newPoint = toCameraPointOrigin(newPoint);
-
 		//Changes base of newPoint to camera's base system
 		newPoint = newPoint.baseChange(scenarioCamera.transformMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
@@ -163,13 +162,13 @@ function storeLightFileContent(fileContent, fileName) {
 	//Changes base of focus to camera's base system
 	focus = focus.baseChange(scenarioCamera.transformMatrix);
 	let ambRefl = parseFloat(inputs[1][0]);
-	let ambColor = new Vector(parseInt(inputs[2][0]), parseInt(inputs[2][1]), 
-							parseInt(inputs[2][2]));
+	let ambColor = new Vector(parseFloat(inputs[2][0]), parseFloat(inputs[2][1]), 
+							parseFloat(inputs[2][2]));
 	let difConstant = parseFloat(inputs[3][0]);
 	let difVector = new Vector(parseFloat(inputs[4][0]), parseFloat(inputs[4][1]),
 							parseFloat(inputs[4][2]));
 	let spec = parseFloat(inputs[5][0]);
-	let sourceColor = new Vector(parseInt(inputs[6][0]), parseInt(inputs[6][1]), parseInt(inputs[6][2]));
+	let sourceColor = new Vector(parseFloat(inputs[6][0]), parseFloat(inputs[6][1]), parseFloat(inputs[6][2]));
 	let rugosity = parseFloat(inputs[7][0]);
 
 	scenarioLight = new Illumination(focus, ambRefl, ambColor, difConstant, 

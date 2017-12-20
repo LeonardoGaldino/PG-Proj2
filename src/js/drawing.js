@@ -3,12 +3,8 @@
  * @requires ./exceptions.js
  * @requires ./utils.js
  */
-var defaultColor = {
-	red: 60,
-	green: 16,
-	blue: 218,
-	alpha: 255
-};
+
+var defaultColor = new Vector(60,16,218);
 
 var canvasColor = new Vector(213, 213, 213);
 
@@ -36,35 +32,6 @@ function drawPixel (ctx, x, y, red, green, blue, alpha) {
 	imageData.data[2] = blue;
 	imageData.data[3] = alpha;
 	ctx.putImageData(imageData, x, y);
-}
-
-//Function that draws every pixel inside a triangle
-//Uses Barycentric algorithm to do it (not as efficient as ScanLine)
-function drawTriangleBarycentricAlgorithm (ctx, trg) {
-	let xmax = -1;
-	let xmin = canvasWidth+1;
-	let ymax = -1;
-	let ymin = canvasHeight+1;
-	for(let i = 0 ; i < trg.points.length ; ++i) {
-		let p = trg.points[i];
-		if(p.coordinates[0] > xmax)
-			xmax = p.coordinates[0];
-		if(p.coordinates[0] < xmin)
-			xmin = p.coordinates[0];
-		if(p.coordinates[1] > ymax)
-			ymax = p.coordinates[1];
-		if(p.coordinates[1] < ymin)
-			ymin = p.coordinates[1];
-	}
-	for(let i = ymin ; i <= ymax ; ++i) {
-		for(let j = xmin ; j <= xmax ; ++j) {
-			let tempPoint = new Point2D(j,i);
-			let barycentricCoords = getBarycentricCoordinates(trg, tempPoint);
-			if(isInside(barycentricCoords))
-				drawPixel(ctx, j, i, defaultColor.red, defaultColor.green, 
-									defaultColor.blue, defaultColor.alpha);
-		}
-	}
 }
 
 //Basically draw a horizontal line of pixels

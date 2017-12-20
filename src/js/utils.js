@@ -91,16 +91,16 @@ function convert2Dto3D(trg, point, obj) {
 	let p1_3D = obj.points3D[trg.points[0].id];
 	let p2_3D = obj.points3D[trg.points[1].id];
 	let p3_3D = obj.points3D[trg.points[2].id];
-
+	
 	let endPoint = PointOperations.barycentricSum([p1_3D, p2_3D, p3_3D], coefs, true);
 	return endPoint;
 }
 
 function computePhongVectorN(curPixel, trg, obj) {
 	let coefs = getBarycentricCoordinates(trg, curPixel);
-	let v1 = obj.triangles3D[trg.points[0].id].normalVector;
-	let v2 = obj.triangles3D[trg.points[1].id].normalVector;
-	let v3 = obj.triangles3D[trg.points[2].id].normalVector;
+	let v1 = obj.points3D[trg.points[0].id].normalVector;
+	let v2 = obj.points3D[trg.points[1].id].normalVector;
+	let v3 = obj.points3D[trg.points[2].id].normalVector;
 	let newVec = coefs.map((coef, idx) => {
 		return (v1.coordinates[idx]*coefs[0] +
 				v2.coordinates[idx]*coefs[1] +
@@ -113,7 +113,7 @@ function computePhongVectorN(curPixel, trg, obj) {
 function getPhongColor(curPixel, p3D, trg, obj) {
 	let N = computePhongVectorN(curPixel, trg, obj)
 	N = N.getNormalizedVector();
-	let V = PointOperations.subtract(new Point(0,0,0), p3D);
+	let V = PointOperations.subtract(scenarioCamera.focus, p3D);
 	V = V.getNormalizedVector();
 	let L = PointOperations.subtract(scenarioLight.focus, p3D);
 	L = L.getNormalizedVector();
@@ -123,18 +123,23 @@ function getPhongColor(curPixel, p3D, trg, obj) {
 		N.multiply(-1);
 	}
 	let _NxL = VectorOperations.scalarProduct(N, L);
+	if(_NxL < 0) {
+		return VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
+	}
 	let R = VectorOperations.scalarMultiplication(N, 2*_NxL);
 	R = VectorOperations.subtract(R, L);
 	R = R.getNormalizedVector();
-	if(VectorOperations.scalarProduct(N, L) < 0) {
-		return VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
-	} 
-	if(VectorOperations.scalarProduct(R, V) < 0) {
-		return VectorOperations.add(VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl),
-		VectorOperations.componentProduct(VectorOperations.scalarMultiplication(scenarioLight.difVector, VectorOperations.scalarProduct(L, N)*scenarioLight.difConstant), scenarioLight.sourceColor));
+	let amb = VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
+	let t1 = scenarioLight.difConstant*_NxL;
+	let t2 = VectorOperations.componentProduct(scenarioLight.sourceColor, scenarioLight.difVector);
+	let difusa = VectorOperations.scalarMultiplication(t2, t1);
+	let t3 = VectorOperations.add(amb,difusa);
+	let _RxV = VectorOperations.scalarProduct(R, V); 
+	if(_RxV < 0) {
+		return t3;
 	} else {
-		return VectorOperations.add(VectorOperations.add(VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl),
-			VectorOperations.componentProduct(VectorOperations.scalarMultiplication(scenarioLight.difVector, VectorOperations.scalarProduct(L, N)*scenarioLight.difConstant), scenarioLight.sourceColor)),
-			VectorOperations.scalarMultiplication(scenarioLight.sourceColor, scenarioLight.spec*(Math.pow(VectorOperations.scalarProduct(R, V), scenarioLight.rugosity))));
+		let t4 = Math.pow(_RxV, scenarioLight.rugosity)*scenarioLight.spec;
+		t4 = VectorOperations.scalarMultiplication(scenarioLight.sourceColor, t4);
+		return VectorOperations.add(t3, t4);
 	}
 }
