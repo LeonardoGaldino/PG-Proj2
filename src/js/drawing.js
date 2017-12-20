@@ -80,13 +80,15 @@ function drawLine (ctx, x1, x2, y, trg, obj) {
 	let endX = Math.max(x1, x2);
 	for(let j = startX ; j <= endX ; ++j){
 		let curPixel = new Point2D(j, y);
-		let curZ = getZCoordinate(trg, curPixel, obj);
+		let p3D = convert2Dto3D(trg, curPixel, obj);
 		if(j < canvasWidth && j >= 0 && y >= 0
 			&& y < zBuffer[j].length) {
-			if(curZ < zBuffer[j][y].distance) {
-				zBuffer[j][y].distance = curZ;
+			if(p3D.coordinates[2] < zBuffer[j][y].distance) {
+				zBuffer[j][y].distance = p3D.coordinates[2];
+				let computedColor = getPhongColor(curPixel, p3D, trg, obj);
+				//Uncomment when getPhongColor is complete
+				//zBuffer[j][y].color = color;
 				zBuffer[j][y].color = defaultColor;
-				//Make all illumination calculations here
 			}
 		}
 	}

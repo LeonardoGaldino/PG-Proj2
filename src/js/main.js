@@ -232,10 +232,10 @@ function runApp() {
 	//Reads Camera into scenarioCamera
 	loadFiles('camera-input-field', storeCameraFileContent);
 
-	//Loads all objects into scenarioObjects
-	loadFiles('file-input-field', storeObjectFileContent);
-
 	//Load illumination files into scenarioLight
 	loadFiles('light-input-field', storeLightFileContent);
+
+	//Loads all objects into scenarioObjects
+	loadFiles('file-input-field', storeObjectFileContent);
 
 }

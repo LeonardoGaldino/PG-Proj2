@@ -86,12 +86,44 @@ var getBarycentricCoordinates = (trg, point) => {
 	return [alpha, beta, gama];
 }
 
-function getZCoordinate(trg, point, obj) {
+function convert2Dto3D(trg, point, obj) {
 	let coefs = getBarycentricCoordinates(trg, point);
 	let p1_3D = obj.points3D[trg.points[0].id];
 	let p2_3D = obj.points3D[trg.points[1].id];
 	let p3_3D = obj.points3D[trg.points[2].id];
 
 	let endPoint = PointOperations.barycentricSum([p1_3D, p2_3D, p3_3D], coefs, true);
-	return endPoint.coordinates[2];
+	return endPoint;
+}
+
+function computePhongVectorN(curPixel, trg, obj) {
+	let coefs = getBarycentricCoordinates(trg, curPixel);
+	let v1 = obj.triangles3D[trg.points[0].id].normalVector;
+	let v2 = obj.triangles3D[trg.points[1].id].normalVector;
+	let v3 = obj.triangles3D[trg.points[2].id].normalVector;
+	let newVec = coefs.map((coef, idx) => {
+		return (v1.coordinates[idx]*coefs[0] +
+				v2.coordinates[idx]*coefs[1] +
+				v3.coordinates[idx]*coefs[2]
+		);
+	});
+	return new Vector(newVec[0], newVec[1], newVec[2]);
+}
+
+function getPhongColor(curPixel, p3D, trg, obj) {
+	let vectorN = computePhongVectorN(curPixel, trg, obj)
+	vectorN = vectorN.getNormalizedVector();
+	let vectorV = PointOperations.subtract(new Point(0,0,0), p3D);
+	vectorV = vectorV.getNormalizedVector();
+	let vectorL = PointOperations.subtract(scenarioLight.focus, p3D);
+	vectorL = vectorL.getNormalizedVector();
+	let _VxN = VectorOperations.scalarProduct(vectorN, vectorV);
+	if(_VxN < 0) {
+		//reverse normal
+		vectorN.multiply(-1);
+	}
+	let _NxL = VectorOperations.scalarProduct(vectorN, vectorL);
+	let vectorR = VectorOperations.scalarMultiplication(vectorN, 2*_NxL);
+	vectorR = VectorOperations.subtract(vectorR, vectorL);
+	vectorR = vectorR.getNormalizedVector();
 }
