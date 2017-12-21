@@ -122,7 +122,12 @@ function drawTriangleScanLine (ctx, trg, obj) {
 function drawZBuffer(ctx) {
 	for(var i = 0; i < canvasWidth; ++i) {
 		for(var j = 0; j < canvasHeight; ++j) {
+			//Doesn't need painting (canvas default color)
+			if(zBuffer[i][j].distance == Number.MAX_VALUE) {
+				continue;
+			}
 			let cur = zBuffer[i][j].color;
+			if(cur.color)
 			for(let k = 0 ; k < 3 ; ++k) {
 				cur.coordinates[k] = Math.max(Math.min(parseInt(cur.coordinates[k]), 255), 0);
 			}

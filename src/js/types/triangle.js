@@ -58,8 +58,6 @@ class Triangle2D {
         let v1 = PointOperations.subtract(p3, p1);
         let v2 = PointOperations.subtract(p2, p1);
         let area = VectorOperations.vectorialProduct(v1,v2).getNorm();
-        //console.log(area, this.points[0].id, this.points[1].id, this.points[2].id);
-        //console.log(p1.coordinates, p2.coordinates, p3.coordinates);
         return area;
     }
 
