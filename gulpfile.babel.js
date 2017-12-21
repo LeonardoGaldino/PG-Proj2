@@ -3,6 +3,7 @@ let gulp = require('gulp');
 let gulpSequence = require('run-sequence'); //Plugin for running gulp tasks in sequence
 let deletefile = require('gulp-delete-file'); //Plugin for deleting temporary files
 let babel = require('gulp-babel'); //Babel plugin to transpile to EC5
+let resolve = require('gulp-resolve-dependencies');
 
 //gulp plugins imported
 let concat = require('gulp-concat');
@@ -17,6 +18,7 @@ let jsDependencies = [
                     ];
 
 let devJsGlobs = [
+                  './src/js/types/*.js',
                   './src/js/*.js'
                 ];
 
@@ -57,6 +59,10 @@ gulp.task('dependeciesStyles', () => { //Take dependencies styles and put in a t
 
 gulp.task('devScripts', () => { //Take scripts, transpile, minify, and put in a temp file
   return gulp.src(devJsGlobs)
+    .pipe(resolve({
+      pattern: /\* @requires [\s-]*(.*\.js)/g
+    }))
+    .on('error', err => { console.log(err.message); })
     .pipe(babel()) //Transpiles to ES5
     .pipe(concat('temp2.js'))
     .pipe(uglify())

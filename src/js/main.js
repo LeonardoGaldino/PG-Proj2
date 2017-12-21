@@ -1,7 +1,13 @@
-let canvas = document.getElementById('main-canvas');
-let ctx = canvas.getContext('2d');
-let canvasWidth = canvas.width;
-let canvasHeight = canvas.height;
+/**
+ * @requires ./types/*
+ * @requires ./drawing.js
+ * @requires ./exceptions.js
+ * @requires ./utils.js
+ */
+var canvas = document.getElementById('main-canvas');
+var ctx = canvas.getContext('2d');
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
 //Array of Object3D objects to be rendered
 var scenarioObjects;
 //Application Camera
@@ -9,15 +15,17 @@ var scenarioCamera;
 //Application light source
 var scenarioLight;
 
-var drawObject = (object) => {
+function drawObject(object) {
 	let triangles = object.triangles2D;
 	for(let i = 0 ; i < triangles.length ; ++i) {
-		drawTriangleScanLine(ctx, triangles[i]);
+		drawTriangleScanLine(ctx, triangles[i], object);
 	}
+
+	drawZBuffer(ctx);
 }
 
 //Parses object file content into objects
-var storeObjectFileContent = (fileContent, fileName) => {
+function storeObjectFileContent(fileContent, fileName) {
 	let objectName = getObjectName(fileName);
 	let newObject = new Object3D(objectName);
 	let lines = fileContent.split('\n');
@@ -25,7 +33,23 @@ var storeObjectFileContent = (fileContent, fileName) => {
 	let numPoints = parseInt(limits[0]);
 	let numTriangles = parseInt(limits[1]);
 	let idx;
-	//Creates Points
+
+	createPoints(numPoints, lines, fileName, newObject);
+	createTriangles(numTriangles, lines, fileName, newObject);
+
+	//Normalize Points normal Vector
+	for(let idx = 0 ; idx < newObject.points3D.length ; ++idx) {
+		let point = newObject.points3D[idx];
+		point.normalVector = point.normalVector.getNormalizedVector();
+	}
+
+	//Saves new Object3D
+	scenarioObjects.push(newObject);
+
+	drawObject(newObject);
+}
+
+function createPoints(numPoints, lines, fileName, newObject){
 	for(idx = 1 ; idx <= numPoints ; ++idx) {
 		let coords = lines[idx].split(' ');
 		let x = parseFloat(coords[0]);
@@ -38,11 +62,7 @@ var storeObjectFileContent = (fileContent, fileName) => {
 		}
 		let newPoint = new Point(x,y,z);
 		//Changes newPoint to camera's point origin
-		let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
-											-scenarioCamera.focus.coordinates[1],
-											-scenarioCamera.focus.coordinates[2]);
-		newPoint = PointOperations.addVector(newPoint, originChangeVector);
-
+		newPoint = toCameraPointOrigin(newPoint);
 		//Changes base of newPoint to camera's base system
 		newPoint = newPoint.baseChange(scenarioCamera.transformMatrix);
 		newPoint.id = (idx-1); //Adds Point's identifier
@@ -55,11 +75,19 @@ var storeObjectFileContent = (fileContent, fileName) => {
 		px = Math.floor((px+1)*(canvasWidth/2));
 		py = Math.floor((1-py)*(canvasHeight/2));
 		let newPoint2D = new Point2D(px, py);
+		newPoint2D.id = (idx-1);
 		newObject.points2D.push(newPoint2D);
-		//drawPixel(ctx, px, py, 255, 0, 0, 255);
 	}
+}
 
-	//Creates triangles
+function toCameraPointOrigin (point) {
+	let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
+		-scenarioCamera.focus.coordinates[1],
+		-scenarioCamera.focus.coordinates[2]);
+	return PointOperations.addVector(point, originChangeVector);
+}
+
+function createTriangles(numTriangles, lines, fileName, newObject){
 	for(; idx < lines.length ; ++idx) {
 		let points = lines[idx].split(' ');
 		if(points.length < 3) { // Avoid blank lines that separates the input
@@ -90,21 +118,10 @@ var storeObjectFileContent = (fileContent, fileName) => {
 					newObject.points2D[p2-1], newObject.points2D[p3-1]);
 		newObject.triangles2D.push(newTriangle2D);
 	}
-
-	//Normalize Points normal Vector
-	for(let idx = 0 ; idx < newObject.points3D.length ; ++idx) {
-		let point = newObject.points3D[idx];
-		point.normalVector = point.normalVector.getNormalizedVector();
-	}
-
-	//Saves new Object3D
-	scenarioObjects.push(newObject);
-
-	drawObject(newObject);
 }
 
 //Parses camera file content into objects
-var storeCameraFileContent = (fileContent, fileName) => {
+function storeCameraFileContent(fileContent, fileName) {
 	let lines = fileContent.split('\n');
 	let inputs = [];
 	for(let idx = 0 ; idx < 4 ; ++idx) {
@@ -130,7 +147,7 @@ var storeCameraFileContent = (fileContent, fileName) => {
 }
 
 //Parses light file content into scenarioLight
-var storeLightFileContent = (fileContent, fileName) => {
+function storeLightFileContent(fileContent, fileName) {
 	let lines = fileContent.split('\n');
 	let inputs = [];
 	for(let idx = 0 ; idx < 8 ; ++idx) {
@@ -141,20 +158,17 @@ var storeLightFileContent = (fileContent, fileName) => {
 	let focus = new Point(parseFloat(inputs[0][0]),
 						parseFloat(inputs[0][1]), parseFloat(inputs[0][2]));
 	//Changes focus to camera's point origin
-	let originChangeVector = new Vector(-scenarioCamera.focus.coordinates[0],
-											-scenarioCamera.focus.coordinates[1],
-											-scenarioCamera.focus.coordinates[2]);
-	focus = PointOperations.addVector(focus, originChangeVector);
+	focus = toCameraPointOrigin(focus);
 	//Changes base of focus to camera's base system
 	focus = focus.baseChange(scenarioCamera.transformMatrix);
 	let ambRefl = parseFloat(inputs[1][0]);
-	let ambColor = [parseInt(inputs[2][0]), parseInt(inputs[2][1]), 
-							parseInt(inputs[2][2])];
+	let ambColor = new Vector(parseFloat(inputs[2][0]), parseFloat(inputs[2][1]), 
+							parseFloat(inputs[2][2]));
 	let difConstant = parseFloat(inputs[3][0]);
-	let difVector = [parseFloat(inputs[4][0]), parseFloat(inputs[4][1]),
-							parseFloat(inputs[4][2])];
+	let difVector = new Vector(parseFloat(inputs[4][0]), parseFloat(inputs[4][1]),
+							parseFloat(inputs[4][2]));
 	let spec = parseFloat(inputs[5][0]);
-	let sourceColor = [parseInt(inputs[6][0]), parseInt(inputs[6][1]), parseInt(inputs[6][2])];
+	let sourceColor = new Vector(parseFloat(inputs[6][0]), parseFloat(inputs[6][1]), parseFloat(inputs[6][2]));
 	let rugosity = parseFloat(inputs[7][0]);
 
 	scenarioLight = new Illumination(focus, ambRefl, ambColor, difConstant, 
@@ -162,7 +176,7 @@ var storeLightFileContent = (fileContent, fileName) => {
 }
 
 //Generic function to load files
-var loadFiles = (fieldId, callbackFunction) => {
+function loadFiles(fieldId, callbackFunction) {
 	let inputNode = document.getElementById(fieldId);
 	let inputFiles = inputNode.files;
 
@@ -187,7 +201,7 @@ var loadFiles = (fieldId, callbackFunction) => {
 
 //Validates if user selected one or more object files
 //Validates if user selected exactly one camera file
-var validateFilesInputs = () => {
+function validateFilesInputs() {
 	let fileInputNode = document.getElementById('file-input-field'); //File DOM node
 	let cameraInputNode = document.getElementById('camera-input-field'); //Camera DOM node
 	let lightInputNode = document.getElementById('light-input-field'); //Illumination DOM node
@@ -199,10 +213,11 @@ var validateFilesInputs = () => {
 
 function eraseCanvas() {
 	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	initializeZBuffer();
 }
 
 //Load all the selected files and parses it into objects
-var runApp = () => {
+function runApp() {
 	//Validates if files are correctly submitted
 	if(!validateFilesInputs()) {
 		Materialize.toast('Selecione uma câmera, uma iluminação e um ou mais objetos!', 4000);
@@ -216,10 +231,10 @@ var runApp = () => {
 	//Reads Camera into scenarioCamera
 	loadFiles('camera-input-field', storeCameraFileContent);
 
-	//Loads all objects into scenarioObjects
-	loadFiles('file-input-field', storeObjectFileContent);
-
 	//Load illumination files into scenarioLight
 	loadFiles('light-input-field', storeLightFileContent);
+
+	//Loads all objects into scenarioObjects
+	loadFiles('file-input-field', storeObjectFileContent);
 
 }

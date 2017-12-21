@@ -13,13 +13,8 @@ body {
 
 #canvas-card {
 	margin: auto;
-	width: 100%;
-	height: 500px; 
+	width: 800px;
+	height: 800px; 
 	padding: 0px 0px 0px 0px;
 	background-color: #00000023;
-}
-
-#main-canvas {
-	width: 100%;
-	height: 500px;
 }
