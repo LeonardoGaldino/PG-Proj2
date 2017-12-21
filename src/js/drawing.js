@@ -127,7 +127,6 @@ function drawZBuffer(ctx) {
 				continue;
 			}
 			let cur = zBuffer[i][j].color;
-			if(cur.color)
 			for(let k = 0 ; k < 3 ; ++k) {
 				cur.coordinates[k] = Math.max(Math.min(parseInt(cur.coordinates[k]), 255), 0);
 			}
