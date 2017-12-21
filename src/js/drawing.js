@@ -124,7 +124,7 @@ function drawZBuffer(ctx) {
 		for(var j = 0; j < canvasHeight; ++j) {
 			let cur = zBuffer[i][j].color;
 			for(let k = 0 ; k < 3 ; ++k) {
-				cur.coordinates[k] = Math.max(Math.min(cur.coordinates[k], 255), 0);
+				cur.coordinates[k] = Math.max(Math.min(parseInt(cur.coordinates[k]), 255), 0);
 			}
 			drawPixel(ctx, i, j, cur.coordinates[0], cur.coordinates[1],
 					cur.coordinates[2], 255);

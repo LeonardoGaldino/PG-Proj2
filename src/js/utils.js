@@ -123,13 +123,13 @@ function getPhongColor(curPixel, p3D, trg, obj) {
 		N.multiply(-1);
 	}
 	let _NxL = VectorOperations.scalarProduct(N, L);
+	let amb = VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
 	if(_NxL < 0) {
-		return VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
+		return amb;
 	}
 	let R = VectorOperations.scalarMultiplication(N, 2*_NxL);
 	R = VectorOperations.subtract(R, L);
 	R = R.getNormalizedVector();
-	let amb = VectorOperations.scalarMultiplication(scenarioLight.ambColor, scenarioLight.ambRefl);
 	let t1 = scenarioLight.difConstant*_NxL;
 	let t2 = VectorOperations.componentProduct(scenarioLight.sourceColor, scenarioLight.difVector);
 	let difusa = VectorOperations.scalarMultiplication(t2, t1);
