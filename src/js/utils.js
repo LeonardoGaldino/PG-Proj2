@@ -75,7 +75,7 @@ var getBarycentricCoordinates = (trg, point) => {
 			let temp2 = trg.points[1].coordinates[1] - trg.points[2].coordinates[1];
 			let alpha = temp/temp2;
 			let beta = (1-alpha);
-			return [alpha, beta, 0];
+			return [0, beta, gama];
 		}
 	}
 	let t2 = new Triangle2D(trg.points[0], trg.points[2], point);

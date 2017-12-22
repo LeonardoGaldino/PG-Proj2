@@ -57,7 +57,7 @@ class Triangle2D {
         let p3 = new Point(this.points[2].coordinates[0], this.points[2].coordinates[1], 0);
         let v1 = PointOperations.subtract(p3, p1);
         let v2 = PointOperations.subtract(p2, p1);
-        let area = VectorOperations.vectorialProduct(v1,v2).getNorm();
+        let area = VectorOperations.vectorialProduct(v1,v2).getNorm()/2;
         return area;
     }
 
